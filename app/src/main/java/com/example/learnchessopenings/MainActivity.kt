@@ -11,18 +11,30 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
-
+    private lateinit var mainAppBar : androidx.appcompat.widget.Toolbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         replaceFragment(Home())
-        var bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        mainAppBar = findViewById(R.id.main_app_bar)
+        mainAppBar.title = "Home"
         bottomNav.setOnItemSelectedListener {
             when(it.itemId) {
-                R.id.home -> replaceFragment(Home())
-                R.id.courses -> replaceFragment(Courses())
-                R.id.profile -> replaceFragment(Profile())
+                R.id.home -> {
+                    mainAppBar.title = it.title
+                    replaceFragment(Home())
+                }
+                R.id.courses -> {
+                    mainAppBar.title = it.title
+                    replaceFragment(Courses())
+                }
+                R.id.profile -> {
+                    mainAppBar.title = it.title
+                    replaceFragment(Profile())
+                }
 
                 else -> {}
             }
