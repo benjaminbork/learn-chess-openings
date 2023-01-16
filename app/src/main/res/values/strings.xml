@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Learn Chess Openings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <!-- Fragments -->
+    <string name="home_fragment">Home</string>
+    <string name="courses_fragment">Courses</string>
+    <string name="profile_fragment">Profile</string>
 </resources>
