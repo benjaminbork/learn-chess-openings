@@ -11,33 +11,32 @@
     <Button
         android:id="@+id/btn_login"
         style="@style/Widget.Material3.Button"
-        android:layout_width="150dp"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="-48dp"
         android:backgroundTint="#4E6C50"
         android:text="@string/lpg_login"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_register"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayout_psw"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout_psw" />
 
     <Button
         android:id="@+id/btn_register"
         style="@style/Widget.Material3.Button"
-        android:layout_width="150dp"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
         android:layout_marginTop="-48dp"
         android:backgroundTint="#4E6C50"
         android:text="@string/lpg_register"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayout_psw"
         app:layout_constraintStart_toEndOf="@+id/btn_login"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_psw"
-        app:layout_constraintVertical_bias="0.502" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_psw" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout_psw"
@@ -45,7 +44,7 @@
         android:layout_height="55dp"
         android:layout_marginTop="16dp"
         android:hint="@string/lpg_psw"
-        android:textColorHint="@android:color/hint_foreground_material_dark"
+        android:textColorHint="#B2FFFFFF"
         app:errorEnabled="true"
         app:hintAnimationEnabled="true"
         app:hintEnabled="true"
@@ -67,7 +66,7 @@
         android:layout_height="55dp"
         android:layout_marginTop="32dp"
         android:hint="@string/lpg_email"
-        android:textColorHint="@android:color/hint_foreground_material_dark"
+        android:textColorHint="#B2FFFFFF"
         app:errorEnabled="true"
         app:hintAnimationEnabled="true"
         app:hintEnabled="true"
@@ -111,4 +110,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_logo" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
