@@ -7,6 +7,7 @@
         <androidx.appcompat.widget.Toolbar
             android:paddingStart="60dp"
             android:paddingTop="10dp"
+            app:title="Test"
             android:paddingBottom="20dp"
             android:id="@+id/main_app_bar"
             android:layout_width="match_parent"

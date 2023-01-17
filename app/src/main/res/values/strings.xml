@@ -1,8 +1,17 @@
 <resources>
-    <string name="app_name">Learn Chess Openings</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="app_name">MongoChess</string>
+
     <!-- Fragments -->
     <string name="home_fragment">Home</string>
     <string name="courses_fragment">Courses</string>
     <string name="profile_fragment">Profile</string>
+
+
+    <!-- Login Page -->
+    <string name="lpg_register">Register</string>
+    <string name="lpg_login">Login</string>
+    <string name="lpg_email">Email</string>
+    <string name="lpg_psw">Password</string>
+
 </resources>
