@@ -84,20 +84,19 @@
 
     <ImageView
         android:id="@+id/img_logo"
-        android:layout_width="192dp"
-        android:layout_height="192dp"
-        android:layout_marginTop="48dp"
-        android:rotation="45"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:srcCompat="@drawable/chess_logo" />
 
     <TextView
         android:id="@+id/appname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         android:letterSpacing="0.1"
         android:shadowColor="#B3000000"
         android:shadowDx="3"
