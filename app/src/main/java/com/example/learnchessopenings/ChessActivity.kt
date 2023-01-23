@@ -10,12 +10,10 @@ import com.example.learnchessopenings.databinding.ChessBinding
 private const val TAG = "ChessActivity"
 class ChessActivity : AppCompatActivity() {
     var chessModel = ChessModel()
-    private lateinit var binding : ChessBinding
     private lateinit var mainAppBar : Toolbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ChessBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.chess)
         Log.d(TAG,chessModel.toString())
     }
 
