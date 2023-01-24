@@ -51,10 +51,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
         for (row in 0..7) {
             for (col in 7 downTo 0) {
-                val piece = chessModel.pieceAt(col,row)
-                if (piece != null) {
-                    drawPieceAt(canvas,col,row, piece.resID)
-                }
+                chessModel.pieceAt(col,row)?.let { drawPieceAt(canvas,col,row, it.resID) }
             }
         }
     }
@@ -65,13 +62,16 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     }
 
     private fun drawChessBoard(canvas: Canvas?) {
-        for (i in 0..7 ) {
-            for (j in 0..7) {
-                paint.color = if ((i + j) % 2 == 0) Color.WHITE else resources.getColor(R.color.primary_green)
-                canvas?.drawRect(originX +  i * cellSide,originY + j * cellSide, originX + (i + 1) * cellSide, originY + (j + 1) * cellSide, paint)
+        for (row in 0..7 ) {
+            for (col in 0..7) {
+                drawSquareAt(canvas,row,col,((row + col) % 2 == 0))
             }
         }
+    }
 
+    private fun drawSquareAt(canvas: Canvas?, col: Int,row: Int,isDark: Boolean) {
+        paint.color = if (isDark) Color.WHITE else resources.getColor(R.color.primary_green)
+        canvas?.drawRect(originX +  col * cellSide,originY + row * cellSide, originX + (col + 1) * cellSide, originY + (row + 1) * cellSide, paint)
     }
 
 }
