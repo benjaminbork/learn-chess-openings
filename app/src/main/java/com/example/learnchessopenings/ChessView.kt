@@ -55,11 +55,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 if (piece != null) {
                     drawPieceAt(canvas,col,row, piece.resID)
                 }
-
             }
         }
-        drawPieceAt(canvas,0,0,R.drawable.wr)
-        drawPieceAt(canvas,0,1,R.drawable.wp)
     }
 
     private fun drawPieceAt(canvas: Canvas?, col: Int, row: Int, resID: Int) {
@@ -70,7 +67,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private fun drawChessBoard(canvas: Canvas?) {
         for (i in 0..7 ) {
             for (j in 0..7) {
-                paint.color = if ((i + j) % 2 == 0) Color.LTGRAY else Color.DKGRAY
+                paint.color = if ((i + j) % 2 == 0) Color.WHITE else resources.getColor(R.color.primary_green)
                 canvas?.drawRect(originX +  i * cellSide,originY + j * cellSide, originX + (i + 1) * cellSide, originY + (j + 1) * cellSide, paint)
             }
         }
