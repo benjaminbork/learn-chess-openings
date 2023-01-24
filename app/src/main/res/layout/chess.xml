@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.example.learnchessopenings.ChessView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:id="@+id/chessView">
+
 
 
 </com.example.learnchessopenings.ChessView>
