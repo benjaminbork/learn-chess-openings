@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
@@ -16,6 +17,11 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private var originX : Float = 20f
     private var originY : Float = 200f
     private val paint = Paint()
+    private var fromCol : Int = -1
+    private var fromRow : Int = -1
+    private var movingPieceX : Float = -1f
+    private var movingPieceY : Float = -1f
+
     private val svgResIDs = setOf(
         R.drawable.bq,
         R.drawable.bk,
@@ -48,6 +54,29 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         drawPieces(canvas)
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event ?: return false
+        when (event.action) {
+
+            MotionEvent.ACTION_DOWN -> {
+                fromCol = ((event.x - originX) / cellSide).toInt()
+                fromRow = 7 - ((event.y - originY) / cellSide).toInt()
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                movingPieceX = event.x
+                movingPieceY = event.y
+                invalidate()
+            }
+            MotionEvent.ACTION_UP -> {
+                val col = ((event.x - originX) / cellSide).toInt()
+                val row = 7 - ((event.y - originY) / cellSide).toInt()
+                Log.d(TAG,"from(${fromCol}, ${fromRow}) to (${col}, ${row})")
+                chessDelegate?.movePiece(fromCol,fromRow,col,row)
+            }
+        }
+        return true
+    }
     private fun loadBitMaps() {
         svgResIDs.forEach {
             bitmaps[it] = AppCompatResources.getDrawable(context, it)?.toBitmap()
@@ -58,8 +87,14 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private fun drawPieces(canvas: Canvas) {
         for (row in 0..7) {
             for (col in 7 downTo 0) {
-                chessDelegate?.pieceAt(col,row)?.let { drawPieceAt(canvas,col,row, it.resID) }
+                if (row != fromRow || col != fromCol) {
+                    chessDelegate?.pieceAt(col,row)?.let { drawPieceAt(canvas,col,row, it.resID) }
+                }
             }
+        }
+        chessDelegate?.pieceAt(fromCol,fromRow)?.let {
+            val bitmap = bitmaps[it.resID] !!
+            canvas.drawBitmap(bitmap,null, RectF(movingPieceX - cellSide / 2, movingPieceY - cellSide / 2 ,movingPieceX + cellSide / 2,movingPieceY + cellSide / 2),paint)
         }
     }
 

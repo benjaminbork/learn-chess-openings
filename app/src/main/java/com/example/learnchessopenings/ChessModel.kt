@@ -41,6 +41,16 @@ class ChessModel {
         }
         return null
     }
+
+    fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
+        val movingPiece = pieceAt(fromCol, fromRow) ?: return
+        pieceAt(toCol, toRow)?.let {
+            if (it.player == movingPiece.player) return
+            piecesBox.remove(it)
+        }
+        piecesBox.remove(movingPiece)
+        piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
+    }
     override fun toString(): String {
         var description = " \n"
         for (row in 7 downTo 0) {
