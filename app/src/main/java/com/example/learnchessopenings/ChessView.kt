@@ -3,15 +3,18 @@ package com.example.learnchessopenings
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
+import java.lang.Integer.min
 
 
 class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-    private val cellSide : Float = 130F
-    private val originX : Float = 20F
-    private val originY : Float = 200F
+    private val scaleFactor = .9f
+    private var cellSide : Float = 130f
+    private var originX : Float = 20f
+    private var originY : Float = 200f
     private val paint = Paint()
     private val svgResIDs = setOf(
         R.drawable.bq,
@@ -35,7 +38,12 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     }
     override fun onDraw(canvas: Canvas?) {
+        canvas?: return
         loadBitMaps()
+        val chessBoardSide = min(width, height) * scaleFactor
+        cellSide = chessBoardSide / 8f
+        originX = (width - chessBoardSide) / 2
+        originY = (height - chessBoardSide) / 6
         drawChessBoard(canvas)
         drawPieces(canvas)
     }
@@ -47,7 +55,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     }
 
-    private fun drawPieces(canvas: Canvas?) {
+    private fun drawPieces(canvas: Canvas) {
         for (row in 0..7) {
             for (col in 7 downTo 0) {
                 chessDelegate?.pieceAt(col,row)?.let { drawPieceAt(canvas,col,row, it.resID) }
@@ -55,12 +63,12 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         }
     }
 
-    private fun drawPieceAt(canvas: Canvas?, col: Int, row: Int, resID: Int) {
+    private fun drawPieceAt(canvas: Canvas, col: Int, row: Int, resID: Int) {
         val bitmap = bitmaps[resID] !!
-        canvas?.drawBitmap(bitmap,null, RectF(originX + col * cellSide, originY + (7 - row) * cellSide ,originX + (col + 1) * cellSide,originY + (7 - row + 1) * cellSide),paint)
+        canvas.drawBitmap(bitmap,null, RectF(originX + col * cellSide, originY + (7 - row) * cellSide ,originX + (col + 1) * cellSide,originY + (7 - row + 1) * cellSide),paint)
     }
 
-    private fun drawChessBoard(canvas: Canvas?) {
+    private fun drawChessBoard(canvas: Canvas) {
         for (row in 0..7 ) {
             for (col in 0..7) {
                 drawSquareAt(canvas,row,col,((row + col) % 2 == 0))
@@ -68,9 +76,9 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         }
     }
 
-    private fun drawSquareAt(canvas: Canvas?, col: Int,row: Int,isDark: Boolean) {
+    private fun drawSquareAt(canvas: Canvas, col: Int,row: Int,isDark: Boolean) {
         paint.color = if (isDark) Color.WHITE else resources.getColor(R.color.primary_green)
-        canvas?.drawRect(originX +  col * cellSide,originY + row * cellSide, originX + (col + 1) * cellSide, originY + (row + 1) * cellSide, paint)
+        canvas.drawRect(originX +  col * cellSide,originY + row * cellSide, originX + (col + 1) * cellSide, originY + (row + 1) * cellSide, paint)
     }
 
 }

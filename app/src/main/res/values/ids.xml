@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="chess_frame" type="id" />
+    <item name="textView6" type="id" />
+    <item name="textView7" type="id" />
+</resources>

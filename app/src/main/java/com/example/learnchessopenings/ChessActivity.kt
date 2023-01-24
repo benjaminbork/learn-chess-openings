@@ -4,18 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.learnchessopenings.databinding.ChessBinding
+
+import com.example.learnchessopenings.R.id.chessView
 
 
-private const val TAG = "ChessActivity"
+const val TAG = "ChessActivity"
 class ChessActivity : AppCompatActivity(), ChessDelegate{
     var chessModel = ChessModel()
-    private lateinit var mainAppBar : Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.chess)
+        setContentView(R.layout.chess_screen)
         Log.d(TAG,chessModel.toString())
-        val chessView = findViewById<ChessView>(R.id.chessView)
+        val chessView = findViewById<ChessView>(chessView)
         chessView.chessDelegate = this
     }
 
