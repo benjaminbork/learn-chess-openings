@@ -21,6 +21,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private var fromRow : Int = -1
     private var movingPieceX : Float = -1f
     private var movingPieceY : Float = -1f
+    private var movingPieceBitMap : Bitmap? = null
+    private  var movingPiece : ChessPiece? = null
 
     private val svgResIDs = setOf(
         R.drawable.bq,
@@ -61,6 +63,11 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
             MotionEvent.ACTION_DOWN -> {
                 fromCol = ((event.x - originX) / cellSide).toInt()
                 fromRow = 7 - ((event.y - originY) / cellSide).toInt()
+                chessDelegate?.pieceAt(fromCol,fromRow)?.let {
+                    movingPiece = it
+                    movingPieceBitMap = bitmaps[it.resID]
+                }
+
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -73,6 +80,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 val row = 7 - ((event.y - originY) / cellSide).toInt()
                 Log.d(TAG,"from(${fromCol}, ${fromRow}) to (${col}, ${row})")
                 chessDelegate?.movePiece(fromCol,fromRow,col,row)
+                movingPieceBitMap = null
+                movingPiece = null
             }
         }
         return true
@@ -87,14 +96,16 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private fun drawPieces(canvas: Canvas) {
         for (row in 0..7) {
             for (col in 7 downTo 0) {
-                if (row != fromRow || col != fromCol) {
-                    chessDelegate?.pieceAt(col,row)?.let { drawPieceAt(canvas,col,row, it.resID) }
+                chessDelegate?.pieceAt(col,row)?.let {
+                    if (it != movingPiece) {
+                        drawPieceAt(canvas,col,row, it.resID)
+                    }
                 }
             }
         }
-        chessDelegate?.pieceAt(fromCol,fromRow)?.let {
-            val bitmap = bitmaps[it.resID] !!
-            canvas.drawBitmap(bitmap,null, RectF(movingPieceX - cellSide / 2, movingPieceY - cellSide / 2 ,movingPieceX + cellSide / 2,movingPieceY + cellSide / 2),paint)
+
+        movingPieceBitMap?.let {
+            canvas.drawBitmap(it,null, RectF(movingPieceX - cellSide / 2, movingPieceY - cellSide / 2 ,movingPieceX + cellSide / 2,movingPieceY + cellSide / 2),paint)
         }
     }
 

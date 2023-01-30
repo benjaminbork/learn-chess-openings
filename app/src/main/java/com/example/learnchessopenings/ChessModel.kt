@@ -43,6 +43,7 @@ class ChessModel {
     }
 
     fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
+        if (fromCol == toCol && fromRow == toRow) return
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
         pieceAt(toCol, toRow)?.let {
             if (it.player == movingPiece.player) return
