@@ -1,5 +1,7 @@
 package com.example.learnchessopenings
 
+import android.util.Log
+
 class ChessModel {
     var piecesBox = mutableSetOf<ChessPiece>()
     init {
@@ -52,6 +54,8 @@ class ChessModel {
         piecesBox.remove(movingPiece)
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
+
+
     override fun toString(): String {
         var description = " \n"
         for (row in 7 downTo 0) {
@@ -90,4 +94,51 @@ class ChessModel {
         description += "  0 1 2 3 4 5 6 7"
         return description
     }
+     fun toFen(): String {
+         var fen = ""
+         var row = 4
+         for (row in 7 downTo 0) {
+             for (col in 0..7) {
+                 val piece = pieceAt(col, row)
+                 if (piece == null) {
+                     fen += "."
+                 } else {
+                     fen += when (piece.chessPieceName) {
+                         ChessPieceName.KING -> {
+                             if (piece.player == ChessPlayer.WHITE) "K" else "k"
+                         }
+                         ChessPieceName.QUEEN -> {
+                             if (piece.player == ChessPlayer.WHITE) "Q" else "q"
+                         }
+                         ChessPieceName.ROOK -> {
+                             if (piece.player == ChessPlayer.WHITE) "R" else "r"
+                         }
+                         ChessPieceName.BISHOP -> {
+                             if (piece.player == ChessPlayer.WHITE) "B" else "b"
+                         }
+                         ChessPieceName.KNIGHT -> {
+                             if (piece.player == ChessPlayer.WHITE) "N" else "n"
+                         }
+                         ChessPieceName.PAWN -> {
+                             if (piece.player == ChessPlayer.WHITE) "P" else "p"
+                         }
+                     }
+                 }
+             }
+             fen = fen.replace("........","8")
+             fen = fen.replace(".......","7")
+             fen = fen.replace("......","6")
+             fen = fen.replace(".....","5")
+             fen = fen.replace("....","4")
+             fen = fen.replace("...","3")
+             fen = fen.replace("..","2")
+             fen = fen.replace(".","1")
+             if (row != 0) {
+                 fen += "/"
+             }
+         }
+         return fen
+    }
+
+
 }

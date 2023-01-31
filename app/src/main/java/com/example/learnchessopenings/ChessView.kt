@@ -45,6 +45,12 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     init {
 
     }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val smaller = min(widthMeasureSpec, heightMeasureSpec)
+        setMeasuredDimension(smaller, smaller)
+    }
     override fun onDraw(canvas: Canvas?) {
         canvas?: return
         loadBitMaps()
@@ -90,7 +96,6 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         svgResIDs.forEach {
             bitmaps[it] = AppCompatResources.getDrawable(context, it)?.toBitmap()
         }
-
     }
 
     private fun drawPieces(canvas: Canvas) {
