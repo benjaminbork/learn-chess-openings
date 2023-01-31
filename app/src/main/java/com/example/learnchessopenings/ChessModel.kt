@@ -56,6 +56,7 @@ class ChessModel {
     }
 
 
+
     override fun toString(): String {
         var description = " \n"
         for (row in 7 downTo 0) {
@@ -138,6 +139,69 @@ class ChessModel {
              }
          }
          return fen
+    }
+    fun loadFEN (fen: String) {
+        piecesBox.removeAll(piecesBox)
+        var fen = fen
+        fen = fen.replace("8","........")
+        fen = fen.replace("7",".......")
+        fen = fen.replace("6","......")
+        fen = fen.replace("5",".....")
+        fen = fen.replace("4","....")
+        fen = fen.replace("3","...")
+        fen = fen.replace("2","..")
+        fen = fen.replace("1",".")
+
+        var fenRows : List<String> = fen.split("/")
+        Log.d(TAG, fenRows.toString())
+
+        for (row in 7 downTo 0) {
+            var fenRow = fenRows[7-row]
+            for (col in 0..7) {
+                var fenCol = fenRow[col]
+                when (fenCol.toString()) {
+                    "K" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.KING,R.drawable.wk))
+                    }
+                    "k" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.BLACK, ChessPieceName.KING,R.drawable.bk))
+                    }
+                    "Q" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.QUEEN,R.drawable.wq))
+                    }
+                    "q" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.BLACK, ChessPieceName.QUEEN,R.drawable.bq))
+                    }
+                    "R" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.ROOK,R.drawable.wr))
+                    }
+                    "r" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.BLACK, ChessPieceName.ROOK,R.drawable.br))
+                    }
+                    "B" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.BISHOP,R.drawable.wb))
+                    }
+                    "b" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.BLACK, ChessPieceName.BISHOP,R.drawable.bb))
+                    }
+                    "N" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.KNIGHT,R.drawable.wn))
+                    }
+                    "n" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.BLACK, ChessPieceName.KNIGHT,R.drawable.bn))
+                    }
+                    "P" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.PAWN,R.drawable.wp))
+                    }
+                    "p" -> {
+                        piecesBox.add(ChessPiece(col,row,ChessPlayer.BLACK, ChessPieceName.PAWN,R.drawable.bp))
+                    }
+                }
+
+            }
+        }
+
+
     }
 
 

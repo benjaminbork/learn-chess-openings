@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.learnchessopenings.R.id.chess
 
 import com.example.learnchessopenings.R.id.chessView
 
@@ -22,7 +23,7 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         Log.d(TAG,chessModel.toString())
         chessView.chessDelegate = this
         findViewById<Button>(R.id.reset_btn).setOnClickListener {
-            Log.d(TAG, chessModel.toFen())
+            chessModel.loadFEN("rnbqkb1r/1ppppppp/p4n2/8/2P5/8/PP1PPPPP/RNBQKBNR")
             chessView.invalidate()
         }
 
