@@ -12,8 +12,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.login_screen)
         var loginBtn = findViewById<Button>(R.id.btn_login)
         loginBtn.setOnClickListener() {
-            var chess  = Intent (applicationContext,ChessActivity::class.java)
-            startActivity(chess)
+            var overview  = Intent (applicationContext,OverviewActivity::class.java)
+            startActivity(overview)
         }
     }
 }
