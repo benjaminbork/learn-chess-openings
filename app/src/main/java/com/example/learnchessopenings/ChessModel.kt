@@ -105,10 +105,40 @@ class ChessModel {
                 abs(from.col - to.col) == 1 && abs(from.row - to.row) == 2
     }
 
-    fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+    private fun canRockMove(from: ChessSquare,to: ChessSquare) : Boolean {
+
+        return to.col == from.col && isColBetweenClear(from, to) ||
+                from.row == to.row && isRowBetweenClear(from, to)
+    }
+
+    private fun isRowBetweenClear(from: ChessSquare,to: ChessSquare) : Boolean {
+        if (from.row != to.row) return false
+        val gap = abs(from.col - to.col) - 1
+        if (gap == 0) return true
+        for (i in 1..gap) {
+            val nextCol = if (to.col > from.col) from.col + i else from.col - i
+            if(pieceAt(nextCol, from.row) != null) return false
+        }
+        return true
+    }
+
+    private fun isColBetweenClear(from: ChessSquare,to: ChessSquare) : Boolean {
+        if (from.col != to.col) return false
+        val gap = abs(from.row - to.row) - 1
+        if (gap == 0) return true
+        for (i in 1..gap) {
+            val nextRow = if (to.row > from.row) from.row + i else from.row - i
+            if(pieceAt(from.col, nextRow) != null) return false
+        }
+        return true
+    }
+
+    private fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        if (from.col == to.col && from.row == to.row) return false
         val movingPiece = pieceAt(from) ?: return false
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
+            ChessPieceName.ROOK -> canRockMove(from, to)
             else -> true
         }
 
