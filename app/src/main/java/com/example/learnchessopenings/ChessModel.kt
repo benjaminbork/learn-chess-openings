@@ -111,13 +111,22 @@ class ChessModel {
     }
 
     private fun canQueenMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        return to.col == from.col && isColBetweenClear(from, to) ||
-                to.row == from.row && isRowBetweenClear(from, to) ||
-                isDiagonalBetweenClear(from, to)
+        return canRockMove(from, to) || canBishopMove(from, to)
     }
 
     private fun canBishopMove(from: ChessSquare, to: ChessSquare) : Boolean {
         return isDiagonalBetweenClear(from, to)
+    }
+
+    private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        if (canQueenMove(from, to)) {
+            return ((abs(from.col - to.col) == 1) &&
+                    (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1)) ||
+                    ((abs(from.row - to.row) == 1) &&
+                            (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
+
+        }
+        return false
     }
 
     private fun isRowBetweenClear(from: ChessSquare,to: ChessSquare) : Boolean {
@@ -165,6 +174,7 @@ class ChessModel {
             ChessPieceName.ROOK -> canRockMove(from, to)
             ChessPieceName.BISHOP -> canBishopMove(from, to)
             ChessPieceName.QUEEN -> canQueenMove(from, to)
+            ChessPieceName.KING -> canKingMove(from, to)
             else -> true
         }
 
