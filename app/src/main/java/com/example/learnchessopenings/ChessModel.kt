@@ -1,5 +1,6 @@
 package com.example.learnchessopenings
 
+import android.nfc.Tag
 import android.util.Log
 
 class ChessModel {
@@ -31,9 +32,14 @@ class ChessModel {
             piecesBox.add(ChessPiece(i,1,ChessPlayer.WHITE, ChessPieceName.PAWN,R.drawable.wp))
             piecesBox.add(ChessPiece(i,6,ChessPlayer.BLACK, ChessPieceName.PAWN,R.drawable.bp))
         }
+
+        stringToChessSquare("e4")
     }
 
-    fun pieceAt(col: Int, row: Int) : ChessPiece? {
+    fun pieceAt(square: ChessSquare) : ChessPiece? {
+        return pieceAt(square.col,square.row)
+    }
+    private fun pieceAt(col: Int, row: Int) : ChessPiece? {
         for(piece in piecesBox) {
             if (col == piece.col && row == piece.row) {
                 return piece
@@ -42,7 +48,12 @@ class ChessModel {
         return null
     }
 
-    fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
+
+    fun movePiece(from: ChessSquare, to: ChessSquare) {
+        movePiece(from.col, from.row,to.col,to.row)
+    }
+
+    private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
         if (fromCol == toCol && fromRow == toRow) return
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
         pieceAt(toCol, toRow)?.let {
@@ -53,6 +64,37 @@ class ChessModel {
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
 
+    fun stringToChessSquare(squareString: String) : ChessSquare {
+        var col = -1
+        var row = -1
+        val stringCol = squareString[0].toString()
+        val stringRow = squareString[1].toString()
+
+        when (stringCol) {
+            "a" -> {col = 0}
+            "b" -> {col = 1}
+            "c" -> {col = 2}
+            "d" -> {col = 3}
+            "e" -> {col = 4}
+            "f" -> {col = 5}
+            "g" -> {col = 6}
+            "h" -> {col = 7}
+        }
+
+        when (stringRow) {
+            "1" -> {row = 0}
+            "2" -> {row = 1}
+            "3" -> {row = 2}
+            "4" -> {row = 3}
+            "5" -> {row = 4}
+            "6" -> {row = 5}
+            "7" -> {row = 6}
+            "8" -> {row = 7}
+        }
+
+        return ChessSquare(col,row)
+
+    }
 
 
     override fun toString(): String {

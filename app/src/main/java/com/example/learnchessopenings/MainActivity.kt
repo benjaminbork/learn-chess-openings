@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.login_screen)
         var loginBtn = findViewById<Button>(R.id.btn_login)
         loginBtn.setOnClickListener() {
-            var overview  = Intent (applicationContext,OverviewActivity::class.java)
+            var overview  = Intent (applicationContext,ChessActivity::class.java)
             startActivity(overview)
         }
     }

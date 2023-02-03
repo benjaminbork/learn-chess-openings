@@ -30,30 +30,35 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.chess_screen)
         chessView = findViewById<ChessView>(R.id.chessView)
-        Log.d(TAG,chessModel.toString())
+        chessModel.reset()
         chessView.chessDelegate = this
         findViewById<Button>(R.id.reset_btn).setOnClickListener {
-            if (i < exampleGame.size) {
+            /*if (i < exampleGame.size) {
                 chessModel.loadFEN(exampleGame[i])
                 i += 1
             } else {
                 findViewById<TextView>(R.id.textView).text = "DONE"
-            }
+            } */
+            movePiece(chessModel.stringToChessSquare("a1"), chessModel.stringToChessSquare("h8"))
             chessView.invalidate()
         }
 
     }
-    override fun pieceAt(col: Int, row: Int): ChessPiece? {
-        return chessModel.pieceAt(col,row)
+    override fun pieceAt(square: ChessSquare): ChessPiece? {
+        return chessModel.pieceAt(square)
     }
 
-    override fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
-        chessModel.movePiece(fromCol, fromRow, toCol, toRow)
+    override fun movePiece(from: ChessSquare, to: ChessSquare) {
+        chessModel.movePiece(from, to)
         chessView.invalidate()
     }
 
     override fun toFen(): String {
         return chessModel.toFen()
+    }
+
+    override fun stringToChessSquare(squareString: String): ChessSquare {
+        return chessModel.stringToChessSquare(squareString)
     }
 
 }
