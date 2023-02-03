@@ -2,6 +2,7 @@ package com.example.learnchessopenings
 
 import android.nfc.Tag
 import android.util.Log
+import java.lang.StrictMath.abs
 
 class ChessModel {
     var piecesBox = mutableSetOf<ChessPiece>()
@@ -32,13 +33,14 @@ class ChessModel {
             piecesBox.add(ChessPiece(i,1,ChessPlayer.WHITE, ChessPieceName.PAWN,R.drawable.wp))
             piecesBox.add(ChessPiece(i,6,ChessPlayer.BLACK, ChessPieceName.PAWN,R.drawable.bp))
         }
-
-        stringToChessSquare("e4")
     }
+
+
 
     fun pieceAt(square: ChessSquare) : ChessPiece? {
         return pieceAt(square.col,square.row)
     }
+
     private fun pieceAt(col: Int, row: Int) : ChessPiece? {
         for(piece in piecesBox) {
             if (col == piece.col && row == piece.row) {
@@ -50,7 +52,9 @@ class ChessModel {
 
 
     fun movePiece(from: ChessSquare, to: ChessSquare) {
-        movePiece(from.col, from.row,to.col,to.row)
+        if (canPieceMove(from,to)) {
+            movePiece(from.col, from.row,to.col,to.row)
+        }
     }
 
     private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
@@ -96,6 +100,19 @@ class ChessModel {
 
     }
 
+    private fun canKnightMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        return abs(from.col - to.col) == 2 && abs(from.row - to.row) == 1 ||
+                abs(from.col - to.col) == 1 && abs(from.row - to.row) == 2
+    }
+
+    fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        val movingPiece = pieceAt(from) ?: return false
+        return when(movingPiece.chessPieceName) {
+            ChessPieceName.KNIGHT -> canKnightMove(from, to)
+            else -> true
+        }
+
+    }
 
     override fun toString(): String {
         var description = " \n"
