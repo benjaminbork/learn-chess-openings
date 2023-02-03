@@ -111,6 +111,10 @@ class ChessModel {
                 from.row == to.row && isRowBetweenClear(from, to)
     }
 
+    private fun canBishopMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        return isDiagonalBetweenClear(from, to)
+    }
+
     private fun isRowBetweenClear(from: ChessSquare,to: ChessSquare) : Boolean {
         if (from.row != to.row) return false
         val gap = abs(from.col - to.col) - 1
@@ -133,12 +137,28 @@ class ChessModel {
         return true
     }
 
+    private fun isDiagonalBetweenClear (from: ChessSquare,to: ChessSquare) : Boolean {
+        if (abs(from.col - to.col) != abs(from.row - to.row)) return false
+        val gap = abs(from.col -to.col) - 1
+        for (i in 1..gap) {
+            val nextCol = if (to.col > from.col) from.col + i else from.col - i
+            val nextRow = if (to.row > from.row) from.row + i else from.row - i
+            if (pieceAt(nextCol,nextRow) != null) return false
+        }
+        return true
+    }
+    private fun isSquareOutsideBoard(to: ChessSquare): Boolean {
+        return to.col > 7 || to.col < 0 || to.row > 7 || to.row < 0
+    }
+
     private fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
         if (from.col == to.col && from.row == to.row) return false
+        if (isSquareOutsideBoard(to)) return false
         val movingPiece = pieceAt(from) ?: return false
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
             ChessPieceName.ROOK -> canRockMove(from, to)
+            ChessPieceName.BISHOP -> canBishopMove(from, to)
             else -> true
         }
 
