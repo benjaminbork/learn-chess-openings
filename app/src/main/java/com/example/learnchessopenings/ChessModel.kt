@@ -1,13 +1,12 @@
 package com.example.learnchessopenings
 
-import android.nfc.Tag
 import android.util.Log
 import java.lang.StrictMath.abs
 
 class ChessModel {
-    var piecesBox = mutableSetOf<ChessPiece>()
+    private var piecesBox = mutableSetOf<ChessPiece>()
     init {
-        // reset()
+        reset()
     }
 
     fun reset() {
@@ -111,6 +110,12 @@ class ChessModel {
                 from.row == to.row && isRowBetweenClear(from, to)
     }
 
+    private fun canQueenMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        return to.col == from.col && isColBetweenClear(from, to) ||
+                to.row == from.row && isRowBetweenClear(from, to) ||
+                isDiagonalBetweenClear(from, to)
+    }
+
     private fun canBishopMove(from: ChessSquare, to: ChessSquare) : Boolean {
         return isDiagonalBetweenClear(from, to)
     }
@@ -159,6 +164,7 @@ class ChessModel {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
             ChessPieceName.ROOK -> canRockMove(from, to)
             ChessPieceName.BISHOP -> canBishopMove(from, to)
+            ChessPieceName.QUEEN -> canQueenMove(from, to)
             else -> true
         }
 
@@ -204,7 +210,6 @@ class ChessModel {
     }
      fun toFen(): String {
          var fen = ""
-         var row = 4
          for (row in 7 downTo 0) {
              for (col in 0..7) {
                  val piece = pieceAt(col, row)
@@ -249,23 +254,23 @@ class ChessModel {
     }
     fun loadFEN (fen: String) {
         piecesBox.removeAll(piecesBox)
-        var fen = fen
-        fen = fen.replace("8","........")
-        fen = fen.replace("7",".......")
-        fen = fen.replace("6","......")
-        fen = fen.replace("5",".....")
-        fen = fen.replace("4","....")
-        fen = fen.replace("3","...")
-        fen = fen.replace("2","..")
-        fen = fen.replace("1",".")
+        var fenString = fen
+        fenString = fenString.replace("8","........")
+        fenString = fenString.replace("7",".......")
+        fenString = fenString.replace("6","......")
+        fenString = fenString.replace("5",".....")
+        fenString = fenString.replace("4","....")
+        fenString = fenString.replace("3","...")
+        fenString = fenString.replace("2","..")
+        fenString = fenString.replace("1",".")
 
-        var fenRows : List<String> = fen.split("/")
+        val fenRows : List<String> = fenString.split("/")
         Log.d(TAG, fenRows.toString())
 
         for (row in 7 downTo 0) {
-            var fenRow = fenRows[7-row]
+            val fenRow = fenRows[7-row]
             for (col in 0..7) {
-                var fenCol = fenRow[col]
+                val fenCol = fenRow[col]
                 when (fenCol.toString()) {
                     "K" -> {
                         piecesBox.add(ChessPiece(col,row,ChessPlayer.WHITE, ChessPieceName.KING,R.drawable.wk))
