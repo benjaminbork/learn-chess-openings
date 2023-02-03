@@ -12,7 +12,7 @@ object course {
     }
 
     const val SQL_CREATE_ENTRIES = """
-        CREATE TABLE ${Course.TABLE_NAME} (
+        CREATE TABLE IF NOT EXISTS ${Course.TABLE_NAME} (
         ${BaseColumns._ID} INTEGER PRIMARY KEY,
         ${Course.COLUMN_NAME_TITLE} TEXT,
         ${Course.COLUMN_NAME_ACTIVE} INTEGER,

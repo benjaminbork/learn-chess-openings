@@ -8,7 +8,7 @@ import com.example.learnchessopenings.Models.variation
 
 // Source for making the database: https://developer.android.com/training/data-storage/sqlite
 
-class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DbHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(course.SQL_CREATE_ENTRIES)
         db.execSQL(variation.SQL_CREATE_ENTRIES)
