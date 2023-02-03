@@ -129,6 +129,18 @@ class ChessModel {
         return false
     }
 
+    private fun canPawnMove(from: ChessSquare, to: ChessSquare): Boolean {
+
+        if (from.row == 1 && (from.col == to.col)) {
+            return to.row == 2 || to.row == 3
+        } else if (from.row == 6 && (from.col == to.col)) {
+            return to.row == 5 || to.row == 4
+        } else if (isColBetweenClear(from, to) && from.col == to.col) {
+            return abs(from.row - to.row) == 1
+        }
+        return false
+    }
+
     private fun isRowBetweenClear(from: ChessSquare,to: ChessSquare) : Boolean {
         if (from.row != to.row) return false
         val gap = abs(from.col - to.col) - 1
@@ -175,6 +187,7 @@ class ChessModel {
             ChessPieceName.BISHOP -> canBishopMove(from, to)
             ChessPieceName.QUEEN -> canQueenMove(from, to)
             ChessPieceName.KING -> canKingMove(from, to)
+            ChessPieceName.PAWN -> canPawnMove(from, to)
             else -> true
         }
 
