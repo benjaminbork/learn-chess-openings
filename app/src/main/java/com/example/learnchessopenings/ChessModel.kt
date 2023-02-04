@@ -7,6 +7,7 @@ class ChessModel {
     private var piecesBox = mutableSetOf<ChessPiece>()
     private var chessLastMove : ChessLastMove? = null
     private var enPassent : ChessPiece? = null
+    private var playerToMove : ChessPlayer = ChessPlayer.WHITE
     init {
         reset()
     }
@@ -57,6 +58,7 @@ class ChessModel {
         if (canPieceMove(from,to)) {
             movePiece(from.col, from.row,to.col,to.row)
             chessLastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
+            switchPlayerToMove()
         }
     }
 
@@ -226,6 +228,9 @@ class ChessModel {
         return to.col > 7 || to.col < 0 || to.row > 7 || to.row < 0
     }
 
+    private fun switchPlayerToMove() {
+        playerToMove = if (playerToMove == ChessPlayer.WHITE) ChessPlayer.BLACK else ChessPlayer.WHITE
+    }
 
 
     fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
@@ -233,6 +238,7 @@ class ChessModel {
         if (from.col == to.col && from.row == to.row) return false
         if (isSquareOutsideBoard(to)) return false
         if (pieceAt(from)?.player == pieceAt(to)?.player) return false
+        if(pieceAt(from)?.player != playerToMove) return false
         val movingPiece = pieceAt(from) ?: return false
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
