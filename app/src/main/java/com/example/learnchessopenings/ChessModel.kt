@@ -5,13 +5,14 @@ import java.lang.StrictMath.abs
 
 class ChessModel {
     private var piecesBox = mutableSetOf<ChessPiece>()
-    private var lastMove : LastMove? = null
+    private var chessLastMove : ChessLastMove? = null
+    private var enPassent : ChessPiece? = null
     init {
         reset()
     }
 
     fun reset() {
-        lastMove = null
+        chessLastMove = null
         piecesBox.removeAll(piecesBox)
         piecesBox.add(ChessPiece(0, 0,ChessPlayer.WHITE, ChessPieceName.ROOK,R.drawable.wr))
         piecesBox.add(ChessPiece(1,0,ChessPlayer.WHITE, ChessPieceName.KNIGHT,R.drawable.wn))
@@ -55,8 +56,7 @@ class ChessModel {
     fun movePiece(from: ChessSquare, to: ChessSquare) {
         if (canPieceMove(from,to)) {
             movePiece(from.col, from.row,to.col,to.row)
-            lastMove = pieceAt(to)?.let { LastMove(it, from, to)}
-            Log.d(TAG, lastMove.toString())
+            chessLastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
         }
     }
 
@@ -68,6 +68,9 @@ class ChessModel {
             piecesBox.remove(it)
         }
         piecesBox.remove(movingPiece)
+        if (enPassent != null) {
+            chessLastMove?.let { piecesBox.remove(it.chessPiece) }
+        }
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
 
@@ -142,29 +145,25 @@ class ChessModel {
             return to.row == 5 || to.row == 4
         } else if ((isColBetweenClear(from, to) && from.col == to.col) && pieceAt(to) == null ||
             canPawnCapture(from, to) ||
-            (canPawnCaptureEnPassent(from, to) && lastMove?.to?.col == to.col)){
-
-            lastMove?.let {
-                if (canPawnCaptureEnPassent(from, to) &&
-                    it.to.col == to.col &&
-                    it.chessPiece.chessPieceName == ChessPieceName.PAWN &&
-                    it.chessPiece.player != chessPiece.player) {
-                    piecesBox.remove(it.chessPiece)
-                }
-            }
+            (canPawnCaptureEnPassent(from, to, chessPiece) && chessLastMove?.to?.col == to.col)){
             return (abs(from.row - to.row) == 1)
         }
         return false
     }
 
-    private fun canPawnCaptureEnPassent(from: ChessSquare, to: ChessSquare): Boolean {
-        var last = lastMove ?: return false
+    private fun canPawnCaptureEnPassent(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
+        var last = chessLastMove ?: return false
         if (last.chessPiece.chessPieceName != ChessPieceName.PAWN) return false
+        if (last.chessPiece.player == chessPiece.player) return false
+
+
+
         if (last.chessPiece.player == ChessPlayer.BLACK &&
             last.from.row == 6 && last.to.row == 4 &&
             (from.row == 5 || from.row == 4) &&
             abs(from.col - last.to.col) == 1)
         {
+            enPassent = last.chessPiece
             return true
         }
         if (last.chessPiece.player == ChessPlayer.WHITE &&
@@ -172,6 +171,7 @@ class ChessModel {
             (from.row == 3 || from.row == 2) &&
             abs(from.col - last.to.col) == 1)
         {
+            enPassent = last.chessPiece
             return true
         }
 
@@ -226,9 +226,13 @@ class ChessModel {
         return to.col > 7 || to.col < 0 || to.row > 7 || to.row < 0
     }
 
-    private fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+
+
+    fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        enPassent = null
         if (from.col == to.col && from.row == to.row) return false
         if (isSquareOutsideBoard(to)) return false
+        if (pieceAt(from)?.player == pieceAt(to)?.player) return false
         val movingPiece = pieceAt(from) ?: return false
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)

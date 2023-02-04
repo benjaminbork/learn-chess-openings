@@ -6,4 +6,7 @@ interface ChessDelegate {
     fun toFen(): String
 
     fun stringToChessSquare(squareString: String) : ChessSquare
+
+    fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean
+
 }

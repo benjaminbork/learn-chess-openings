@@ -61,4 +61,8 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.stringToChessSquare(squareString)
     }
 
+    override fun canPieceMove(from: ChessSquare, to: ChessSquare): Boolean {
+        return chessModel.canPieceMove(from,to)
+    }
+
 }

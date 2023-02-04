@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import java.lang.Integer.min
 
@@ -58,7 +59,11 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         cellSide = chessBoardSide / 8f
         originX = (width - chessBoardSide) / 2
         originY = (height - chessBoardSide) / 6
-        drawChessBoard(canvas)
+        if (movingPiece == null) {
+            drawChessBoard(canvas)
+        } else {
+            drawChessBoardWithHeatMap(canvas)
+        }
         drawPieces(canvas)
     }
 
@@ -84,7 +89,6 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
             MotionEvent.ACTION_UP -> {
                 val col = ((event.x - originX) / cellSide).toInt()
                 val row = 7 - ((event.y - originY) / cellSide).toInt()
-                Log.d(TAG,"from(${fromCol}, ${fromRow}) to (${col}, ${row})")
                 chessDelegate?.movePiece(ChessSquare(fromCol,fromRow), ChessSquare(col,row))
                 movingPieceBitMap = null
                 movingPiece = null
@@ -127,9 +131,28 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         }
     }
 
+    private fun drawChessBoardWithHeatMap(canvas: Canvas) {
+        var isPossibleMove : Boolean?
+        for (row in 0..7 ) {
+            for (col in 0..7) {
+                isPossibleMove =movingPiece?.let { chessDelegate?.canPieceMove(ChessSquare(it.col,it.row), ChessSquare(col, row)) }
+                drawSquareAtWithHeatMap(canvas,col,row,((row + col) % 2 == 0), isPossibleMove)
+            }
+
+
+        }
+    }
+
+
     private fun drawSquareAt(canvas: Canvas, col: Int,row: Int,isDark: Boolean) {
         paint.color = if (isDark) Color.WHITE else resources.getColor(R.color.primary_green)
         canvas.drawRect(originX +  col * cellSide,originY + row * cellSide, originX + (col + 1) * cellSide, originY + (row + 1) * cellSide, paint)
+    }
+
+    private fun drawSquareAtWithHeatMap(canvas: Canvas, col: Int, row: Int, isDark: Boolean, isPossibleMove: Boolean?
+    ) {
+        paint.color = if (isPossibleMove == true && isDark)  ColorUtils.blendARGB(Color.RED, Color.WHITE,0.3f)else if (isPossibleMove == true) ColorUtils.blendARGB(Color.RED, Color.WHITE,0.4f)  else if (isDark) resources.getColor(R.color.primary_green)  else Color.WHITE
+        canvas.drawRect(RectF(originX + col * cellSide, originY + (7 - row) * cellSide ,originX + (col + 1) * cellSide,originY + (7 - row + 1) * cellSide),paint)
     }
 
 }
