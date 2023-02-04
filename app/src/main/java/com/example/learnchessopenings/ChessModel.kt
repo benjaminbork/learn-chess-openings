@@ -142,9 +142,9 @@ class ChessModel {
         if (chessPiece.player == ChessPlayer.WHITE && from.row > to.row) return false
         if (chessPiece.player == ChessPlayer.BLACK && from.row < to.row) return false
         if (from.row == 1 && (from.col == to.col)) {
-            return to.row == 2 || to.row == 3
+            return (to.row == 2 || to.row == 3) && isColBetweenClear(from, to)
         } else if (from.row == 6 && (from.col == to.col)) {
-            return to.row == 5 || to.row == 4
+            return (to.row == 5 || to.row == 4) && isColBetweenClear(from, to)
         } else if ((isColBetweenClear(from, to) && from.col == to.col) && pieceAt(to) == null ||
             canPawnCapture(from, to) ||
             (canPawnCaptureEnPassent(from, to, chessPiece) && chessLastMove?.to?.col == to.col)){
