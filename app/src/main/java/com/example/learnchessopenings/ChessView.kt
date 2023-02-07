@@ -85,6 +85,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 movingPieceX = event.x
                 movingPieceY = event.y
                 invalidate()
+
             }
             MotionEvent.ACTION_UP -> {
                 val col = ((event.x - originX) / cellSide).toInt()
