@@ -135,47 +135,27 @@ class ChessModel {
 
     private fun canRockMove(from: ChessSquare,to: ChessSquare) : Boolean {
 
-        return (to.col == from.col && isColBetweenClear(from, to) ||
-                from.row == to.row && isRowBetweenClear(from, to))
+        return ((to.col == from.col && isColBetweenClear(from, to)) ||
+            (from.row == to.row && isRowBetweenClear(from, to)))
     }
 
     private fun canQueenMove(from: ChessSquare, to: ChessSquare) : Boolean {
         if (canRockMove(from, to) || canBishopMove(from, to)) {
-            val temporaryPieceBox = piecesBox
-            val movingPiece = pieceAt(from)
-            val pieceAtTargetSquare = pieceAt(to)
-            temporaryPieceBox.remove(pieceAt(from))
-            if (pieceAtTargetSquare != null) {
-                temporaryPieceBox.remove(pieceAtTargetSquare)
-            }
-            if (movingPiece != null) {
-                temporaryPieceBox.add(ChessPiece(to.col,to.row,movingPiece.player,movingPiece.chessPieceName,movingPiece.resID))
-            }
-            val isSafeMove = isKingChecked(temporaryPieceBox, ChessPlayer.WHITE)
-
-            if (movingPiece != null) {
-                temporaryPieceBox.remove(ChessPiece(to.col,to.row,movingPiece.player,movingPiece.chessPieceName,movingPiece.resID))
-                temporaryPieceBox.add(movingPiece)
-            }
-
-            if (pieceAtTargetSquare != null) {
-                temporaryPieceBox.add(pieceAtTargetSquare)
-            }
-            return isSafeMove
+            return isSafeMove(from, to)
         }
         return false
     }
 
     private fun canBishopMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        return isDiagonalBetweenClear(from, to)
+        return (isDiagonalBetweenClear(from, to))
     }
 
     private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
         if (canRockMove(from, to) || canBishopMove(from, to)) {
-            return ((abs(from.col - to.col) == 1) &&
+            return if (((abs(from.col - to.col) == 1) &&
                     (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1)) ||
                     ((abs(from.row - to.row) == 1) &&
-                            (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
+                            (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))) isSafeMove(from, to) else false
 
         }
         return false
@@ -268,9 +248,10 @@ class ChessModel {
         return true
     }
 
-    private fun isKingChecked(pieces: MutableSet<ChessPiece>, playerToMove: ChessPlayer): Boolean {
+    private fun isKingChecked(pieces: MutableSet<ChessPiece>): Boolean {
         isWhiteKingChecked = false
         isBlackKingChecked = false
+        switchPlayerToMove()
         for (piece in pieces) {
             if (piece.player == ChessPlayer.BLACK && canPieceMove(ChessSquare(piece.col, piece.row,), whiteKingLocation)) {
                 isWhiteKingChecked = true
@@ -278,9 +259,33 @@ class ChessModel {
             if (piece.player == ChessPlayer.WHITE && canPieceMove(ChessSquare(piece.col, piece.row,), blackKingLocation)) {
                 isBlackKingChecked = true
             }
+
+        }
+        switchPlayerToMove()
+
+        return if (playerToMove == ChessPlayer.WHITE) isWhiteKingChecked else isBlackKingChecked
+    }
+
+    private fun isSafeMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        val movingPiece = pieceAt(from)
+        val pieceAtTargetSquare = pieceAt(to)
+        piecesBox.remove(pieceAt(from))
+        if (pieceAtTargetSquare != null) {
+            piecesBox.remove(pieceAtTargetSquare)
+        }
+        if (movingPiece != null) {
+            piecesBox.add(ChessPiece(to.col,to.row,movingPiece.player,movingPiece.chessPieceName,movingPiece.resID))
+        }
+        val isKingInCheck = isKingChecked(piecesBox)
+        if (movingPiece != null) {
+            piecesBox.remove(ChessPiece(to.col,to.row,movingPiece.player,movingPiece.chessPieceName,movingPiece.resID))
+            piecesBox.add(movingPiece)
         }
 
-        return if (playerToMove == ChessPlayer.WHITE) !isWhiteKingChecked else !isBlackKingChecked
+        if (pieceAtTargetSquare != null) {
+            piecesBox.add(pieceAtTargetSquare)
+        }
+        return !isKingInCheck
     }
 
 
@@ -299,7 +304,7 @@ class ChessModel {
         if (from.col == to.col && from.row == to.row) return false
         if (isSquareOutsideBoard(to)) return false
         if (pieceAt(from)?.player == pieceAt(to)?.player) return false
-        // if(pieceAt(from)?.player != playerToMove) return false
+        if(pieceAt(from)?.player != playerToMove) return false
         val movingPiece = pieceAt(from) ?: return false
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
@@ -308,7 +313,6 @@ class ChessModel {
             ChessPieceName.QUEEN -> canQueenMove(from, to)
             ChessPieceName.KING -> canKingMove(from, to)
             ChessPieceName.PAWN -> canPawnMove(from, to, movingPiece)
-            else -> true
         }
     }
 
