@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
             null
         )
 
+        // Checks if a user already exists and reroutes to the homepage if it's true
         if(cursor.count < 1) {
             setContentView(R.layout.login_screen)
         }
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         if(name != null) {
             val values = ContentValues().apply {
                 put(user.User.COLUMN_NAME_NAME, name.toString())
+                put(user.User.COLUMN_NAME_STREAK, 0)
+                put(user.User.COLUMN_NAME_XP, 0)
             }
             val newRowId = writeDb.insert(user.User.TABLE_NAME, null, values)
 

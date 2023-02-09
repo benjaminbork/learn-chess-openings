@@ -21,6 +21,7 @@ class Home : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var db: DbHelper = DbHelper(context)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +29,8 @@ class Home : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val data = DbHelper(context)
-        val dbb = data.readableDatabase
+        db = DbHelper(context)
+        val dbb = db.readableDatabase
     }
 
     override fun onCreateView(
@@ -38,6 +39,11 @@ class Home : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onDestroy() {
+        db.close()
+        super.onDestroy()
     }
 
     companion object {
