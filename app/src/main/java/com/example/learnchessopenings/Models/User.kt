@@ -22,7 +22,7 @@ object user {
         CREATE TABLE IF NOT EXISTS ${User.TABLE_NAME} (
         ${BaseColumns._ID} INTEGER PRIMARY KEY,
         ${User.COLUMN_NAME_NAME} TEXT,
-        ${User.COLUMN_NAME_STREAK} INT,
+        ${User.COLUMN_NAME_STREAK} INTEGER,
         ${User.COLUMN_NAME_LAST_DAY_STREAK} TEXT,
         ${User.COLUMN_NAME_XP} INTEGER,
         ${User.COLUMN_NAME_XPMO} INTEGER,

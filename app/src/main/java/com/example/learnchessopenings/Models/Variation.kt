@@ -4,7 +4,7 @@ import android.provider.BaseColumns
 
 object variation {
     object Variation : BaseColumns {
-        const val TABLE_NAME = "course"
+        const val TABLE_NAME = "variation"
         const val COLUMN_NAME_TITLE = "title"
         const val COLUMN_NAME_STREAK = "streak"
         const val COLUMN_NAME_LEARNED = "learned"
