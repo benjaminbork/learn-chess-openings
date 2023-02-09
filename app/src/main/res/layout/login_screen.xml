@@ -8,80 +8,6 @@
     android:background="#66395144"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_login"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-48dp"
-        android:backgroundTint="#4E6C50"
-        android:text="@string/lpg_login"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_register"
-        app:layout_constraintStart_toStartOf="@+id/textInputLayout_psw"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_psw" />
-
-    <Button
-        android:id="@+id/btn_register"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-48dp"
-        android:backgroundTint="#4E6C50"
-        android:text="@string/lpg_register"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textInputLayout_psw"
-        app:layout_constraintStart_toEndOf="@+id/btn_login"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_psw" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout_psw"
-        android:layout_width="345dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="16dp"
-        android:hint="@string/lpg_psw"
-        android:textColorHint="#B2FFFFFF"
-        app:errorEnabled="true"
-        app:hintAnimationEnabled="true"
-        app:hintEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_email">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#B34E6C50"
-            android:singleLine="true"
-            android:textColor="@android:color/primary_text_dark" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout_email"
-        android:layout_width="345dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="32dp"
-        android:hint="@string/lpg_email"
-        android:textColorHint="#B2FFFFFF"
-        app:errorEnabled="true"
-        app:hintAnimationEnabled="true"
-        app:hintEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appname">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#B34E6C50"
-            android:singleLine="true"
-            android:textColor="@android:color/primary_text_dark" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <ImageView
         android:id="@+id/img_logo"
         android:layout_width="256dp"
@@ -109,5 +35,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_logo" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_username"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="@string/lpg_name"
+        android:textColorHint="#B2FFFFFF"
+        app:errorEnabled="true"
+        app:hintAnimationEnabled="true"
+        app:hintEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/btn_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appname">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#B34E6C50"
+            android:singleLine="true"
+            android:textColor="@android:color/primary_text_dark" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_login"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="#4E6C50"
+        android:onClick="createUser"
+        android:text="@string/lpg_login"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
