@@ -51,19 +51,37 @@ class Profile : Fragment() {
         val userData = getUserData()
 
         // Profile card
-        val usernameField = profileView.findViewById<View>(R.id.username) as TextView
+        val usernameField = profileView.findViewById<TextView>(R.id.username)
         usernameField.text = userData["name"].toString()
 
-        // TODO: Create some ranks
+        val userRankField = profileView.findViewById<TextView>(R.id.currentRank)
+        val nextRankField = profileView.findViewById<TextView>(R.id.xpNextRank)
+        val rankBar = profileView.findViewById<ProgressBar>(R.id.rankBar)
+        val allRanks: Map<String, Int> = mapOf(
+            "Newbie" to 0,
+            "Beginner" to 50,
+            "Novice" to 120,
+            "Master" to 340
+        )
+        allRanks.forEach { (title, exp) ->
+            if(userData["experience"] as Int >= exp) {
+                userRankField.text = "Rank: $title"
+            }
+            else if(nextRankField.text == "Highest Rank Achieved") {
+                nextRankField.text = "${(exp - userData["experience"] as Int).toString()} XP to $title"
+                rankBar.max = exp
+                rankBar.progress = userData["experience"] as Int
+            }
+        }
 
-        val xpCountField = profileView.findViewById<View>(R.id.totalXpCount) as TextView
+        val xpCountField = profileView.findViewById<TextView>(R.id.totalXpCount)
         xpCountField.text = userData["experience"].toString()
 
-        val streakCountField = profileView.findViewById<View>(R.id.totalStreakCount) as TextView
+        val streakCountField = profileView.findViewById<TextView>(R.id.totalStreakCount)
         streakCountField.text = userData["streak"].toString()
 
         // Activity card
-        val weeklyXpField = profileView.findViewById<View>(R.id.weekly_xp_count) as TextView
+        val weeklyXpField = profileView.findViewById<TextView>(R.id.weekly_xp_count)
         var highest = 0
         var totalXp = 0
         for(day in userData["exp_by_day"] as Array<Int?>) {
@@ -93,8 +111,8 @@ class Profile : Fragment() {
             arrayOf(R.id.saturday_bar, R.id.saturday_count),
             arrayOf(R.id.sunday_bar, R.id.sunday_count),
         )
-        val bar = profileView.findViewById<View>(weekValues[weekday][0]) as ProgressBar
-        val txt = profileView.findViewById<View>(weekValues[weekday][1]) as TextView
+        val bar = profileView.findViewById<ProgressBar>(weekValues[weekday][0])
+        val txt = profileView.findViewById<TextView>(weekValues[weekday][1])
 
         bar.max = highestXp
         bar.progress = expDay ?: 0
