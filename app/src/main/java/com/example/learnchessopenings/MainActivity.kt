@@ -31,7 +31,10 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             val overview = Intent (applicationContext, OverviewActivity::class.java)
+            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            overview.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(overview)
+            finish()
         }
     }
 
@@ -54,7 +57,9 @@ class MainActivity : AppCompatActivity() {
 
             if(newRowId != (-1).toLong()) {
                 val overview = Intent (applicationContext, OverviewActivity::class.java)
+                overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(overview)
+                finish()
             }
         }
     }
