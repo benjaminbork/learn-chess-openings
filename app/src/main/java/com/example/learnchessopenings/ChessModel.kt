@@ -102,6 +102,7 @@ class ChessModel {
 
 
     private fun getAllValidMoves(): MutableList<ChessMove> {
+        enPassent = null
         // 1. generate all moves
         var moves = getAllPossibleMoves()
         val staringPosition = toFen()
@@ -371,7 +372,6 @@ class ChessModel {
 
 
     fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        enPassent = null
         if (from.col == to.col && from.row == to.row) return false
         if (isSquareOutsideBoard(to)) return false
         if (pieceAt(from)?.player == pieceAt(to)?.player) return false
