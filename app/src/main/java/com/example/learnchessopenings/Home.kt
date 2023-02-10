@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.learnchessopenings.DbHelper
 import android.widget.TextView
 import java.text.SimpleDateFormat
 
@@ -23,6 +24,7 @@ class Home : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var db: DbHelper = DbHelper(context)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,8 @@ class Home : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        db = DbHelper(context)
+        val dbb = db.readableDatabase
     }
 
     override fun onCreateView(
@@ -59,6 +63,11 @@ class Home : Fragment() {
 
         val dailyDateText: TextView = homeView.findViewById(R.id.dailyPuzzleDate)
         dailyDateText.text = "${dayText} of ${monthName}"
+    }
+
+    override fun onDestroy() {
+        db.close()
+        super.onDestroy()
     }
 
     companion object {
