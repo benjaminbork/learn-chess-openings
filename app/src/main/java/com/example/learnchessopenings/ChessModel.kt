@@ -1,9 +1,11 @@
 package com.example.learnchessopenings
 
+import android.util.Log
 import java.lang.StrictMath.abs
 
 class ChessModel {
     private var piecesBox = mutableSetOf<ChessPiece>()
+    private var checkingPieces = mutableSetOf<ChessPiece>()
     private var chessLastMove : ChessLastMove? = null
     private var enPassent : ChessPiece? = null
     private var playerToMove : ChessPlayer = ChessPlayer.WHITE
@@ -41,7 +43,9 @@ class ChessModel {
         }
     }
 
-
+    fun resetCheckingPieces() {
+        checkingPieces.removeAll(piecesBox)
+    }
 
     fun pieceAt(square: ChessSquare) : ChessPiece? {
         return pieceAt(square.col,square.row)
@@ -57,12 +61,13 @@ class ChessModel {
     }
 
 
-    fun movePieceWithoutValidation(from: ChessSquare, to: ChessSquare) {
-        movePiece(from.col, from.row,to.col,to.row)
-    }
 
     fun movePiece(from: ChessSquare, to: ChessSquare) {
-        if (canPieceMove(from,to)) {
+        val movingPiece = pieceAt(from)
+        val moveString = getMoveString(from, to)
+        val move = movingPiece?.let { ChessMove(it,from, to, moveString) }
+        val moves = getAllValidMoves()
+        if (move in moves) {
             movePiece(from.col, from.row,to.col,to.row)
             chessLastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
             chessLastMove?.let {
@@ -94,6 +99,77 @@ class ChessModel {
         }
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
+
+
+    private fun getAllValidMoves(): MutableList<ChessMove> {
+        // 1. generate all moves
+        var moves = getAllPossibleMoves()
+        val staringPosition = toFen()
+        val lastMove = chessLastMove
+        // 2. for each move make the move
+        // 3. generate all opponents moves
+        // 4. for each opponents move, check for checks
+        Log.d(TAG, "${moves.size}")
+        for (i  in moves.size - 1 downTo 0) {
+            movePiece(moves[i].from.col, moves[i].from.row, moves[i].to.col, moves[i].to.row)
+            if (inCheck()) {
+                Log.d(TAG, moves[i].toString())
+                moves.remove(moves[i])
+            }
+            loadFEN(staringPosition)
+        }
+
+        // 5. if they do attack your king, not a valid move
+
+        return moves
+
+    }
+    private fun getAllPossibleMoves(): MutableList<ChessMove> {
+        var moves = mutableListOf<ChessMove>()
+        for (piece in piecesBox) {
+            for (col in 0..7) {
+                for (row in 0..7) {
+                    val to = ChessSquare(col, row)
+                    val from = ChessSquare(piece.col, piece.row)
+                    val moveString = getMoveString(from, to)
+                    if (canPieceMove(from, to)) {
+                        moves.add(ChessMove(piece, from, to, moveString))
+                    }
+                }
+            }
+        }
+
+        return moves
+    }
+
+    private fun inCheck(): Boolean {
+        return if (playerToMove == ChessPlayer.WHITE) {
+            squareUnderAttack(whiteKingLocation)
+        } else {
+            squareUnderAttack(blackKingLocation)
+        }
+    }
+
+    private fun squareUnderAttack(kingLocation: ChessSquare): Boolean {
+        switchPlayerToMove()
+        val opponentMoves = getAllPossibleMoves()
+        switchPlayerToMove()
+        for (move in opponentMoves) {
+            if (move.to == kingLocation) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun getMoveString(from: ChessSquare,to: ChessSquare) : String {
+        var moveString = ""
+        moveString += chessSquareToString(from)
+        moveString += chessSquareToString(to)
+
+        return moveString
+    }
+
 
     fun stringToChessSquare(squareString: String) : ChessSquare {
         var col = -1
@@ -127,6 +203,37 @@ class ChessModel {
 
     }
 
+    fun chessSquareToString(chessSquare:ChessSquare) : String {
+        val col = chessSquare.col
+        val row = chessSquare.row
+        var squareString = ""
+
+        when (col) {
+            0 -> {squareString += "a"}
+            1 -> {squareString += "b"}
+            2 -> {squareString += "c"}
+            3 -> {squareString += "d"}
+            4 -> {squareString += "e"}
+            5 -> {squareString += "f"}
+            6 -> {squareString += "g"}
+            7 -> {squareString += "h"}
+        }
+
+        when (row) {
+            0 -> {squareString += "1"}
+            1 -> {squareString += "2"}
+            2 -> {squareString += "3"}
+            3 -> {squareString += "4"}
+            4 -> {squareString += "5"}
+            5 -> {squareString += "6"}
+            6 -> {squareString += "7"}
+            7 -> {squareString += "8"}
+        }
+
+        return squareString
+
+    }
+
     private fun canKnightMove(from: ChessSquare, to: ChessSquare) : Boolean {
 
         return (abs(from.col - to.col) == 2 && abs(from.row - to.row) == 1 ||
@@ -139,23 +246,23 @@ class ChessModel {
             (from.row == to.row && isRowBetweenClear(from, to)))
     }
 
-    private fun canQueenMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        if (canRockMove(from, to) || canBishopMove(from, to)) {
-            return isSafeMove(from, to)
+    private fun canQueenMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
+        return (canRockMove(from, to) || canBishopMove(from, to, chessPiece))
+    }
+
+    private fun canBishopMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
+        if (isDiagonalBetweenClear(from, to)) {
+            return true
         }
         return false
     }
 
-    private fun canBishopMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        return (isDiagonalBetweenClear(from, to))
-    }
-
-    private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        if (canRockMove(from, to) || canBishopMove(from, to)) {
-            return if (((abs(from.col - to.col) == 1) &&
+    private fun canKingMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
+        if (canRockMove(from, to) || canBishopMove(from, to,chessPiece)) {
+            return ((abs(from.col - to.col) == 1) &&
                     (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1)) ||
                     ((abs(from.row - to.row) == 1) &&
-                            (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))) isSafeMove(from, to) else false
+                            (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
 
         }
         return false
@@ -248,45 +355,9 @@ class ChessModel {
         return true
     }
 
-    private fun isKingChecked(pieces: MutableSet<ChessPiece>): Boolean {
-        isWhiteKingChecked = false
-        isBlackKingChecked = false
-        switchPlayerToMove()
-        for (piece in pieces) {
-            if (piece.player == ChessPlayer.BLACK && canPieceMove(ChessSquare(piece.col, piece.row,), whiteKingLocation)) {
-                isWhiteKingChecked = true
-            }
-            if (piece.player == ChessPlayer.WHITE && canPieceMove(ChessSquare(piece.col, piece.row,), blackKingLocation)) {
-                isBlackKingChecked = true
-            }
 
-        }
-        switchPlayerToMove()
 
-        return if (playerToMove == ChessPlayer.WHITE) isWhiteKingChecked else isBlackKingChecked
-    }
 
-    private fun isSafeMove(from: ChessSquare, to: ChessSquare) : Boolean {
-        val movingPiece = pieceAt(from)
-        val pieceAtTargetSquare = pieceAt(to)
-        piecesBox.remove(pieceAt(from))
-        if (pieceAtTargetSquare != null) {
-            piecesBox.remove(pieceAtTargetSquare)
-        }
-        if (movingPiece != null) {
-            piecesBox.add(ChessPiece(to.col,to.row,movingPiece.player,movingPiece.chessPieceName,movingPiece.resID))
-        }
-        val isKingInCheck = isKingChecked(piecesBox)
-        if (movingPiece != null) {
-            piecesBox.remove(ChessPiece(to.col,to.row,movingPiece.player,movingPiece.chessPieceName,movingPiece.resID))
-            piecesBox.add(movingPiece)
-        }
-
-        if (pieceAtTargetSquare != null) {
-            piecesBox.add(pieceAtTargetSquare)
-        }
-        return !isKingInCheck
-    }
 
 
 
@@ -309,9 +380,9 @@ class ChessModel {
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
             ChessPieceName.ROOK -> canRockMove(from, to)
-            ChessPieceName.BISHOP -> canBishopMove(from, to)
-            ChessPieceName.QUEEN -> canQueenMove(from, to)
-            ChessPieceName.KING -> canKingMove(from, to)
+            ChessPieceName.BISHOP -> canBishopMove(from, to, movingPiece)
+            ChessPieceName.QUEEN -> canQueenMove(from, to, movingPiece)
+            ChessPieceName.KING -> canKingMove(from, to, movingPiece)
             ChessPieceName.PAWN -> canPawnMove(from, to, movingPiece)
         }
     }

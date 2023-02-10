@@ -93,6 +93,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 chessDelegate?.movePiece(ChessSquare(fromCol,fromRow), ChessSquare(col,row))
                 movingPieceBitMap = null
                 movingPiece = null
+
             }
         }
         return true

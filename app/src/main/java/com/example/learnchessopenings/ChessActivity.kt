@@ -64,4 +64,8 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.canPieceMove(from,to)
     }
 
+    override fun resetCheckingPieces() {
+        chessModel.resetCheckingPieces()
+    }
+
 }

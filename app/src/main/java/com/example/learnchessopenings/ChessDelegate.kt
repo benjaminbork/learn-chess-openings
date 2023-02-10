@@ -9,4 +9,6 @@ interface ChessDelegate {
 
     fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean
 
+    fun resetCheckingPieces()
+
 }
