@@ -31,8 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             val overview = Intent (applicationContext, OverviewActivity::class.java)
-            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            overview.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(overview)
             finish()
         }
