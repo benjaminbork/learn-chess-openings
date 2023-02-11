@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     private fun storeCourse(c: Map<String, Any>) {
         val writeDb = db.writableDatabase
 
-        var variationIds: Array<Int> = arrayOf()
+        var variationIds: Array<Long> = arrayOf()
         for(v in c[course.Course.COLUMN_NAME_VARIATIONS] as Array<Map<String, Any>>) {
             variationIds += storeVariation(v, writeDb)
         }
@@ -114,8 +114,25 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun storeVariation(v: Map<String, Any>, writeDb: SQLiteDatabase): Int {
-        return 17
+    @Suppress("UNCHECKED_CAST")
+    private fun storeVariation(v: Map<String, Any>, writeDb: SQLiteDatabase): Long {
+
+        val fenList: Array<String> = v[variation.Variation.COLUMN_NAME_FEN] as Array<String>
+        val commentList: Array<String> = v[variation.Variation.COLUMN_NAME_COMMENTS] as Array<String>
+
+        val values = ContentValues().apply {
+            put(variation.Variation.COLUMN_NAME_TITLE, v[variation.Variation.COLUMN_NAME_TITLE].toString())
+            put(variation.Variation.COLUMN_NAME_STREAK, 0)
+            put(variation.Variation.COLUMN_NAME_LEARNED, 0)
+            put(variation.Variation.COLUMN_NAME_FEN, fenList.joinToString(separator = ",-,"))
+            put(variation.Variation.COLUMN_NAME_COMMENTS, commentList.joinToString(separator = ",-,"))
+        }
+
+        return writeDb.insert(
+            variation.Variation.TABLE_NAME,
+            null,
+            values
+        )
     }
 
     private val coursesData: Array<Map<String, Any>> = arrayOf(
