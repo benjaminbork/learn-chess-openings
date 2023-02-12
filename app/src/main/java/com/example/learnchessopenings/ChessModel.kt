@@ -25,10 +25,6 @@ class ChessModel {
     private var hasLongWhiteRookMoved = false
     private var hasShortBlackRookMoved = false
     private var hasLongBlackRookMoved = false
-    private var whiteShortCastlingAllowed = true
-    private var whiteLongCastlingAllowed = true
-    private var blackShortCastlingAllowed = true
-    private var blackLongCastlingAllowed = true
 
     init {
         reset()
@@ -175,11 +171,18 @@ class ChessModel {
         var moves = getAllPossibleMoves()
         val staringPosition = toFen()
         for (i  in moves.size - 1 downTo 0) {
-            movePiece(moves[i].from.col, moves[i].from.row, moves[i].to.col, moves[i].to.row)
-            if (inCheck()) {
-                moves.remove(moves[i])
+            if (moves[i].chessPiece.chessPieceName != ChessPieceName.KING) {
+                movePiece(moves[i].from.col, moves[i].from.row, moves[i].to.col, moves[i].to.row)
+                if (inCheck()) {
+                    moves.remove(moves[i])
+                }
+                loadFEN(staringPosition)
+            } else if (moves[i].chessPiece.chessPieceName == ChessPieceName.KING){
+                if (squareUnderAttack(moves[i].to, moves[i].chessPiece)) {
+                    moves.remove(moves[i])
+                }
             }
-            loadFEN(staringPosition)
+
         }
         checkingFutureMoves = false
         return moves
@@ -203,14 +206,6 @@ class ChessModel {
         }
 
         return moves
-    }
-
-    private fun getOpponentsMoves() : MutableList<ChessMove> {
-        switchPlayerToMove()
-        val opponentMoves = getAllPossibleMoves()
-        switchPlayerToMove()
-
-        return opponentMoves
     }
 
     fun getValidMovesForView () : MutableList<ChessMove> {
@@ -314,7 +309,7 @@ class ChessModel {
         return false
     }
 
-    private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
+    private fun canKingMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
         if (canKingShortCastling(from, to)) {
            return true
             }
@@ -325,8 +320,7 @@ class ChessModel {
         if ((canRockMove(from, to) || canBishopMove(from, to))) {
             return (((abs(from.col - to.col) == 1) &&
                     (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1))
-                    || ((abs(from.row - to.row) == 1) && (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
-                    ) && !squareUnderAttack(to)
+                    || ((abs(from.row - to.row) == 1) && (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1)))
         }
         return false
     }
@@ -519,17 +513,21 @@ class ChessModel {
         return false
     }
 
-    private fun squareUnderAttack(chessSquare: ChessSquare): Boolean {
+    private fun squareUnderAttack(chessSquare: ChessSquare, chessPiece: ChessPiece): Boolean {
+        val startingPosition = toFen()
+        movePiece(chessPiece.col, chessPiece.row, chessSquare.col, chessSquare.row)
         switchPlayerToMove()
         for (piece in piecesBox) {
             if (piece.player == playerToMove) {
                 if (canPieceMove(ChessSquare(piece.col, piece.row), chessSquare)) {
                     switchPlayerToMove()
+                    loadFEN(startingPosition)
                     return true
                 }
             }
         }
         switchPlayerToMove()
+        loadFEN(startingPosition)
         return false
     }
 
@@ -563,7 +561,7 @@ class ChessModel {
     }
 
 
-    fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+    private fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
         if (from.col == to.col && from.row == to.row) return false
         if (isSquareOutsideBoard(to)) return false
         if (pieceAt(from)?.player == pieceAt(to)?.player) return false
@@ -574,7 +572,7 @@ class ChessModel {
             ChessPieceName.ROOK -> canRockMove(from, to)
             ChessPieceName.BISHOP -> canBishopMove(from, to)
             ChessPieceName.QUEEN -> canQueenMove(from, to)
-            ChessPieceName.KING -> canKingMove(from, to)
+            ChessPieceName.KING -> canKingMove(from, to, movingPiece)
             ChessPieceName.PAWN -> canPawnMove(from, to, movingPiece)
         }
     }
