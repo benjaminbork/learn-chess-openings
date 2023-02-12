@@ -311,11 +311,11 @@ class ChessModel {
         if (canKingLongCastling(from, to)) {
             return true
         }
-        if (canRockMove(from, to) || canBishopMove(from, to)) {
-            return ((abs(from.col - to.col) == 1) &&
-                    (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1)) ||
-                    ((abs(from.row - to.row) == 1) &&
-                            (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
+        if ((canRockMove(from, to) || canBishopMove(from, to))) {
+            return (((abs(from.col - to.col) == 1) &&
+                    (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1))
+                    || ((abs(from.row - to.row) == 1) && (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
+                    ) && !squareUnderAttack(to)
         }
         return false
     }
@@ -487,13 +487,13 @@ class ChessModel {
 
     private fun inCheck(): Boolean {
         return if (playerToMove == ChessPlayer.WHITE) {
-            squareUnderAttack(whiteKingLocation)
+            futureSquareUnderAttack(whiteKingLocation)
         } else {
-            squareUnderAttack(blackKingLocation)
+            futureSquareUnderAttack(blackKingLocation)
         }
     }
 
-    private fun squareUnderAttack(chessSquare: ChessSquare): Boolean {
+    private fun futureSquareUnderAttack(chessSquare: ChessSquare): Boolean {
         switchPlayerToMove()
         val opponentMoves = getAllPossibleMoves()
         switchPlayerToMove()
@@ -502,6 +502,20 @@ class ChessModel {
                 return true
             }
         }
+        return false
+    }
+
+    private fun squareUnderAttack(chessSquare: ChessSquare): Boolean {
+        switchPlayerToMove()
+        for (piece in piecesBox) {
+            if (piece.player == playerToMove) {
+                if (canPieceMove(ChessSquare(piece.col, piece.row), chessSquare)) {
+                    switchPlayerToMove()
+                    return true
+                }
+            }
+        }
+        switchPlayerToMove()
         return false
     }
 
