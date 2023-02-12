@@ -4,22 +4,37 @@ import android.util.Log
 import java.lang.StrictMath.abs
 
 class ChessModel {
+    // general game variables
     private var piecesBox = mutableSetOf<ChessPiece>()
     private var validMoves = mutableListOf<ChessMove>()
-    private var checkingPieces = mutableSetOf<ChessPiece>()
-    private var chessLastMove : ChessLastMove? = null
-    private var enPassent : ChessPiece? = null
     private var playerToMove : ChessPlayer = ChessPlayer.WHITE
+    private var lastMove : ChessLastMove? = null
+
+    // pawn variables
+    private var enPassant : ChessPiece? = null
+
+    // king variables
     private var whiteKingLocation : ChessSquare = ChessSquare(4, 0)
     private var blackKingLocation : ChessSquare = ChessSquare(4,7)
-    private var isWhiteKingChecked : Boolean = false
-    private var isBlackKingChecked : Boolean = false
+
+    // castling variables
+    private var hasWhiteKingMoved = false
+    private var hasBlackKingMoved = false
+    private var hasShortWhiteRookMoved = false
+    private var hasLongWhiteRookMoved = false
+    private var hasShortBlackRookMoved = false
+    private var hasLongBlackRookMoved = false
+    private var whiteShortCastlingAllowed = true
+    private var whiteLongCastlingAllowed = true
+    private var blackShortCastlingAllowed = true
+    private var blackLongCastlingAllowed = true
+
     init {
         reset()
     }
 
     fun reset() {
-        chessLastMove = null
+        lastMove = null
         piecesBox.removeAll(piecesBox)
         piecesBox.add(ChessPiece(0, 0,ChessPlayer.WHITE, ChessPieceName.ROOK,R.drawable.wr))
         piecesBox.add(ChessPiece(1,0,ChessPlayer.WHITE, ChessPieceName.KNIGHT,R.drawable.wn))
@@ -45,9 +60,6 @@ class ChessModel {
         validMoves.addAll(getAllValidMoves())
     }
 
-    fun resetCheckingPieces() {
-        checkingPieces.removeAll(piecesBox)
-    }
 
     fun pieceAt(square: ChessSquare) : ChessPiece? {
         return pieceAt(square.col,square.row)
@@ -74,20 +86,59 @@ class ChessModel {
 
         if (move in validMoves) {
             movePiece(from.col, from.row,to.col,to.row)
-            chessLastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
-            chessLastMove?.let {
+            lastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
+            lastMove?.let {
+                // check if last move was a king move
                 if (it.chessPiece.chessPieceName == ChessPieceName.KING) {
                     if (it.chessPiece.player == ChessPlayer.WHITE) {
                         whiteKingLocation = it.to
+                        hasWhiteKingMoved = true
                     } else {
                         blackKingLocation = it.to
+                        hasBlackKingMoved = true
                     }
                 }
-            }
+                // check if last move was a rook move
+                if (it.chessPiece.chessPieceName == ChessPieceName.ROOK && playerToMove == ChessPlayer.WHITE) {
+                    if (it.from == ChessSquare(0,0)) {
+                        hasLongWhiteRookMoved = true
+                    }
+                    if (it.from == ChessSquare(7,0)) {
+                        hasShortWhiteRookMoved = true
+                    }
+                }
+                if (it.chessPiece.chessPieceName == ChessPieceName.ROOK && playerToMove == ChessPlayer.BLACK) {
+                    if (it.from == ChessSquare(0,7)) {
+                        hasLongBlackRookMoved = true
+                    }
+                    if (it.from == ChessSquare(7,7)) {
+                        hasShortBlackRookMoved = true
+                    }
+                }
+                // check for short castling
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.WHITE
+                    && it.from == ChessSquare(4,0) && it.to == ChessSquare(6,0)) {
+                    movePiece(7, 0, 5,0)
+                }
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.BLACK
+                    && it.from == ChessSquare(4,7) && it.to == ChessSquare(6,7)) {
+                    movePiece(7, 7, 5,7)
+                }
+
+                // check for long castling
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.WHITE
+                    && it.from == ChessSquare(4,0) && it.to == ChessSquare(2,0)) {
+                    movePiece(0, 0, 3,0)
+                }
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.BLACK
+                    && it.from == ChessSquare(4,7) && it.to == ChessSquare(2,7)) {
+                    movePiece(0, 7, 3,7)
+                }
+
+                }
             switchPlayerToMove()
             validMoves.removeAll(validMoves)
             validMoves.addAll(getAllValidMoves())
-
             }
 
         }
@@ -102,21 +153,16 @@ class ChessModel {
             piecesBox.remove(it)
         }
         piecesBox.remove(movingPiece)
-        if (enPassent != null) {
-            chessLastMove?.let { piecesBox.remove(it.chessPiece) }
+        if (enPassant != null) {
+            lastMove?.let { piecesBox.remove(it.chessPiece) }
         }
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
 
     private fun getAllValidMoves(): MutableList<ChessMove> {
-        enPassent = null
-        // 1. generate all moves
+        enPassant = null
         var moves = getAllPossibleMoves()
         val staringPosition = toFen()
-        val lastMove = chessLastMove
-        // 2. for each move make the move
-        // 3. generate all opponents moves
-        // 4. for each opponents move, check for checks
         for (i  in moves.size - 1 downTo 0) {
             movePiece(moves[i].from.col, moves[i].from.row, moves[i].to.col, moves[i].to.row)
             if (inCheck()) {
@@ -124,8 +170,6 @@ class ChessModel {
             }
             loadFEN(staringPosition)
         }
-
-        // 5. if they do attack your king, not a valid move
 
         return moves
 
@@ -150,29 +194,19 @@ class ChessModel {
         return moves
     }
 
+    private fun getOpponentsMoves() : MutableList<ChessMove> {
+        switchPlayerToMove()
+        val opponentMoves = getAllPossibleMoves()
+        switchPlayerToMove()
+
+        return opponentMoves
+    }
+
     fun getValidMovesForView () : MutableList<ChessMove> {
         return validMoves
     }
 
-    private fun inCheck(): Boolean {
-        return if (playerToMove == ChessPlayer.WHITE) {
-            squareUnderAttack(whiteKingLocation)
-        } else {
-            squareUnderAttack(blackKingLocation)
-        }
-    }
 
-    private fun squareUnderAttack(kingLocation: ChessSquare): Boolean {
-        switchPlayerToMove()
-        val opponentMoves = getAllPossibleMoves()
-        switchPlayerToMove()
-        for (move in opponentMoves) {
-            if (move.to == kingLocation) {
-                return true
-            }
-        }
-        return false
-    }
 
     private fun getMoveString(from: ChessSquare,to: ChessSquare) : String {
         var moveString = ""
@@ -270,6 +304,13 @@ class ChessModel {
     }
 
     private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        if (canKingShortCastling(from, to)) {
+           return true
+            }
+
+        if (canKingLongCastling(from, to)) {
+            return true
+        }
         if (canRockMove(from, to) || canBishopMove(from, to)) {
             return ((abs(from.col - to.col) == 1) &&
                     (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1)) ||
@@ -279,8 +320,82 @@ class ChessModel {
         return false
     }
 
-    private fun canKingCastle(from: ChessSquare,to: ChessSquare) {
+    private fun canKingShortCastling (from: ChessSquare, to: ChessSquare) : Boolean {
+        val whiteShortCastlingSafeSquares = mutableListOf<ChessSquare>()
+        whiteShortCastlingSafeSquares.add(ChessSquare(4,0))
+        whiteShortCastlingSafeSquares.add(ChessSquare(5,0))
+        whiteShortCastlingSafeSquares.add(ChessSquare(6,0))
 
+        val blackShortCastlingSafeSquares = mutableListOf<ChessSquare>()
+        blackShortCastlingSafeSquares.add(ChessSquare(4,7))
+        blackShortCastlingSafeSquares.add(ChessSquare(5,7))
+        blackShortCastlingSafeSquares.add(ChessSquare(6,7))
+
+        if ((ChessSquare(to.col, to.row) == ChessSquare(6,0))
+            && hasKingShortCastlingRights()
+            && isRowBetweenClear(from, ChessSquare(7,0))
+            && !squaresUnderAttack(whiteShortCastlingSafeSquares)
+            && playerToMove == ChessPlayer.WHITE
+                ) {
+            return true
+        }
+        if ((ChessSquare(to.col, to.row) == ChessSquare(6,7))
+            && hasKingShortCastlingRights()
+            && isRowBetweenClear(from, ChessSquare(7,7))
+            && !squaresUnderAttack(blackShortCastlingSafeSquares)
+            && playerToMove == ChessPlayer.BLACK
+        ) {
+            return true
+        }
+        return false
+    }
+
+    private fun canKingLongCastling (from: ChessSquare, to: ChessSquare) : Boolean {
+        val whiteLongCastlingSafeSquares = mutableListOf<ChessSquare>()
+        whiteLongCastlingSafeSquares.add(ChessSquare(4,0))
+        whiteLongCastlingSafeSquares.add(ChessSquare(3,0))
+        whiteLongCastlingSafeSquares.add(ChessSquare(2,0))
+
+        val blackLongCastlingSafeSquares = mutableListOf<ChessSquare>()
+        blackLongCastlingSafeSquares.add(ChessSquare(4,7))
+        blackLongCastlingSafeSquares.add(ChessSquare(3,7))
+        blackLongCastlingSafeSquares.add(ChessSquare(2,7))
+
+        if ((ChessSquare(to.col, to.row) == ChessSquare(2,0))
+            && hasKingLongCastlingRights()
+            && isRowBetweenClear(from, ChessSquare(0,0))
+            && !squaresUnderAttack(whiteLongCastlingSafeSquares)
+            && playerToMove == ChessPlayer.WHITE
+        ) {
+            return true
+        }
+        if ((ChessSquare(to.col, to.row) == ChessSquare(2,7))
+            && hasKingLongCastlingRights()
+            && isRowBetweenClear(from, ChessSquare(0,7))
+            && !squaresUnderAttack(blackLongCastlingSafeSquares)
+            && playerToMove == ChessPlayer.BLACK
+        ) {
+            return true
+        }
+        return false
+    }
+
+
+
+    private fun hasKingShortCastlingRights() : Boolean {
+        return if (playerToMove == ChessPlayer.WHITE) {
+            !hasShortWhiteRookMoved && !hasWhiteKingMoved
+        } else {
+            !hasShortBlackRookMoved && !hasBlackKingMoved
+        }
+    }
+
+    private fun hasKingLongCastlingRights() : Boolean {
+        return if (playerToMove == ChessPlayer.WHITE) {
+            !hasLongWhiteRookMoved && !hasWhiteKingMoved
+        } else {
+            !hasLongBlackRookMoved && !hasBlackKingMoved
+        }
     }
 
     private fun canPawnMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
@@ -292,14 +407,14 @@ class ChessModel {
             return (to.row == 5 || to.row == 4) && isColBetweenClear(from, to) && pieceAt(to) == null
         } else if ((isColBetweenClear(from, to) && from.col == to.col) && pieceAt(to) == null ||
             canPawnCapture(from, to) ||
-            (canPawnCaptureEnPassent(from, to, chessPiece) && chessLastMove?.to?.col == to.col)){
+            (canPawnCaptureEnPassant(from, to, chessPiece) && lastMove?.to?.col == to.col)){
             return (abs(from.row - to.row) == 1)
         }
         return false
     }
 
-    private fun canPawnCaptureEnPassent(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
-        var last = chessLastMove ?: return false
+    private fun canPawnCaptureEnPassant(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
+        var last = lastMove ?: return false
         if (last.chessPiece.chessPieceName != ChessPieceName.PAWN) return false
         if (last.chessPiece.player == chessPiece.player) return false
 
@@ -310,7 +425,7 @@ class ChessModel {
             (from.row == 5 || from.row == 4) &&
             abs(from.col - last.to.col) == 1)
         {
-            enPassent = last.chessPiece
+            enPassant = last.chessPiece
             return true
         }
         if (last.chessPiece.player == ChessPlayer.WHITE &&
@@ -318,7 +433,7 @@ class ChessModel {
             (from.row == 3 || from.row == 2) &&
             abs(from.col - last.to.col) == 1)
         {
-            enPassent = last.chessPiece
+            enPassant = last.chessPiece
             return true
         }
 
@@ -370,7 +485,42 @@ class ChessModel {
         return true
     }
 
+    private fun inCheck(): Boolean {
+        return if (playerToMove == ChessPlayer.WHITE) {
+            squareUnderAttack(whiteKingLocation)
+        } else {
+            squareUnderAttack(blackKingLocation)
+        }
+    }
 
+    private fun squareUnderAttack(chessSquare: ChessSquare): Boolean {
+        switchPlayerToMove()
+        val opponentMoves = getAllPossibleMoves()
+        switchPlayerToMove()
+        for (move in opponentMoves) {
+            if (move.to == chessSquare) {
+                return true
+            }
+        }
+        return false
+    }
+
+
+    private fun squaresUnderAttack(chessSquares: MutableList<ChessSquare>): Boolean {
+        switchPlayerToMove()
+        for (chessSquare in chessSquares) {
+            for (piece in piecesBox) {
+                if (piece.player == playerToMove) {
+                    if (canPieceMove(ChessSquare(piece.col, piece.row), chessSquare)) {
+                        switchPlayerToMove()
+                        return true
+                    }
+                }
+            }
+        }
+        switchPlayerToMove()
+        return false
+    }
 
 
 
