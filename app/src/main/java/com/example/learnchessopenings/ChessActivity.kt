@@ -32,13 +32,9 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         chessModel.reset()
         chessView.chessDelegate = this
         findViewById<Button>(R.id.reset_btn).setOnClickListener {
-            /*if (i < exampleGame.size) {
-                chessModel.loadFEN(exampleGame[i])
-                i += 1
-            } else {
-                findViewById<TextView>(R.id.textView).text = "DONE"
-            } */
-            movePiece(chessModel.stringToChessSquare("a1"), chessModel.stringToChessSquare("h8"))
+            chessModel.getPuzzleData()
+            chessModel.checkPuzzleFetchSuccess()
+
             chessView.invalidate()
         }
 
@@ -62,6 +58,14 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
 
     override fun getValidMovesForView(): MutableList<ChessMove> {
         return chessModel.getValidMovesForView()
+    }
+
+    override fun getPuzzleData() {
+        return chessModel.getPuzzleData()
+    }
+
+    override fun checkPuzzleFetchSuccess(): Boolean {
+        return chessModel.checkPuzzleFetchSuccess()
     }
 
 

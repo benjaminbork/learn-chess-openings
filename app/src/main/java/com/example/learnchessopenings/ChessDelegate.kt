@@ -8,4 +8,8 @@ interface ChessDelegate {
 
     fun getValidMovesForView () : MutableList<ChessMove>
 
+    fun getPuzzleData()
+    fun checkPuzzleFetchSuccess () : Boolean
+
+
 }

@@ -1,6 +1,11 @@
 package com.example.learnchessopenings
 
 import android.util.Log
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.StrictMath.abs
 
 class ChessModel {
@@ -26,11 +31,15 @@ class ChessModel {
     private var hasShortBlackRookMoved = false
     private var hasLongBlackRookMoved = false
 
+    // puzzle variables
+    private var solution = ""
+    private var puzzlePgn = ""
     init {
         reset()
     }
 
     fun reset() {
+        getPuzzleData()
         lastMove = null
         piecesBox.removeAll(piecesBox)
         piecesBox.add(ChessPiece(0, 0,ChessPlayer.WHITE, ChessPieceName.ROOK,R.drawable.wr))
@@ -168,7 +177,7 @@ class ChessModel {
     private fun getAllValidMoves(): MutableList<ChessMove> {
         enPassant = null
         checkingFutureMoves = true
-        var moves = getAllPossibleMoves()
+        val moves = getAllPossibleMoves()
         val staringPosition = toFen()
         for (i  in moves.size - 1 downTo 0) {
             if (moves[i].chessPiece.chessPieceName != ChessPieceName.KING) {
@@ -189,7 +198,7 @@ class ChessModel {
 
     }
     private fun getAllPossibleMoves(): MutableList<ChessMove> {
-        var moves = mutableListOf<ChessMove>()
+        val moves = mutableListOf<ChessMove>()
         for (piece in piecesBox) {
             if (piece.player == playerToMove) {
                 for (col in 0..7) {
@@ -255,7 +264,7 @@ class ChessModel {
 
     }
 
-    fun chessSquareToString(chessSquare:ChessSquare) : String {
+    private fun chessSquareToString(chessSquare:ChessSquare) : String {
         val col = chessSquare.col
         val row = chessSquare.row
         var squareString = ""
@@ -309,7 +318,7 @@ class ChessModel {
         return false
     }
 
-    private fun canKingMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
+    private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
         if (canKingShortCastling(from, to)) {
            return true
             }
@@ -412,15 +421,15 @@ class ChessModel {
             return (to.row == 5 || to.row == 4) && isColBetweenClear(from, to) && pieceAt(to) == null
         } else if ((isColBetweenClear(from, to) && from.col == to.col) && pieceAt(to) == null ||
             canPawnCapture(from, to) ||
-            (canPawnCaptureEnPassant(from, to, chessPiece) && lastMove?.to?.col == to.col)){
+            (canPawnCaptureEnPassant(from, chessPiece) && lastMove?.to?.col == to.col)){
             return (abs(from.row - to.row) == 1)
         }
         return false
     }
 
-    private fun canPawnCaptureEnPassant(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
+    private fun canPawnCaptureEnPassant(from: ChessSquare, chessPiece: ChessPiece): Boolean {
 
-        var last = lastMove ?: return false
+        val last = lastMove ?: return false
         if (last.chessPiece.chessPieceName != ChessPieceName.PAWN) return false
         if (last.chessPiece.player == chessPiece.player) return false
 
@@ -572,7 +581,7 @@ class ChessModel {
             ChessPieceName.ROOK -> canRockMove(from, to)
             ChessPieceName.BISHOP -> canBishopMove(from, to)
             ChessPieceName.QUEEN -> canQueenMove(from, to)
-            ChessPieceName.KING -> canKingMove(from, to, movingPiece)
+            ChessPieceName.KING -> canKingMove(from, to)
             ChessPieceName.PAWN -> canPawnMove(from, to, movingPiece)
         }
     }
@@ -719,8 +728,39 @@ class ChessModel {
 
             }
         }
+    }
+    fun getPuzzleData() {
+        val baseUrl = "https://lichess.org/"
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(baseUrl)
+            .build()
+            .create(ApiInterface::class.java)
+        val retrofitData = retrofitBuilder.getData()
+
+        retrofitData.enqueue(object : Callback<DailyPuzzleData> {
+            override fun onResponse(
+                call: Call<DailyPuzzleData>,
+                response: Response<DailyPuzzleData>
+            ) {
+                val responseBody = response.body() !!
 
 
+                        solution = responseBody.puzzle.solution.toString()
+                        puzzlePgn = responseBody.game.pgn
+                        Log.d(TAG, solution)
+                        Log.d(TAG, puzzlePgn)
+
+            }
+
+            override fun onFailure(call: Call<DailyPuzzleData>, t: Throwable) {
+                Log.d(TAG, "error: "+ t.message)
+            }
+        })
+    }
+
+    fun checkPuzzleFetchSuccess () : Boolean {
+        return (solution.isNotEmpty() && puzzlePgn.isNotEmpty())
     }
 
 
