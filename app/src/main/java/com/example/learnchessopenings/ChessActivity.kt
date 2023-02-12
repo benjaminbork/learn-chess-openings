@@ -60,12 +60,9 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.stringToChessSquare(squareString)
     }
 
-    override fun canPieceMove(from: ChessSquare, to: ChessSquare): Boolean {
-        return chessModel.canPieceMove(from,to)
+    override fun getValidMovesForView(): MutableList<ChessMove> {
+        return chessModel.getValidMovesForView()
     }
 
-    override fun resetCheckingPieces() {
-        chessModel.resetCheckingPieces()
-    }
 
 }

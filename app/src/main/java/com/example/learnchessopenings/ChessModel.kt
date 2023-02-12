@@ -5,6 +5,7 @@ import java.lang.StrictMath.abs
 
 class ChessModel {
     private var piecesBox = mutableSetOf<ChessPiece>()
+    private var validMoves = mutableListOf<ChessMove>()
     private var checkingPieces = mutableSetOf<ChessPiece>()
     private var chessLastMove : ChessLastMove? = null
     private var enPassent : ChessPiece? = null
@@ -41,6 +42,9 @@ class ChessModel {
             piecesBox.add(ChessPiece(i,1,ChessPlayer.WHITE, ChessPieceName.PAWN,R.drawable.wp))
             piecesBox.add(ChessPiece(i,6,ChessPlayer.BLACK, ChessPieceName.PAWN,R.drawable.bp))
         }
+
+        val moves = getAllValidMoves()
+        validMoves.addAll(moves)
     }
 
     fun resetCheckingPieces() {
@@ -66,8 +70,11 @@ class ChessModel {
         val movingPiece = pieceAt(from)
         val moveString = getMoveString(from, to)
         val move = movingPiece?.let { ChessMove(it,from, to, moveString) }
-        val moves = getAllValidMoves()
-        if (move in moves) {
+        if (validMoves.isEmpty()) {
+            validMoves.addAll(getAllValidMoves())
+        }
+
+        if (move in validMoves) {
             movePiece(from.col, from.row,to.col,to.row)
             chessLastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
             chessLastMove?.let {
@@ -80,6 +87,9 @@ class ChessModel {
                 }
             }
             switchPlayerToMove()
+            validMoves.removeAll(validMoves)
+            validMoves.addAll(getAllValidMoves())
+
             }
 
         }
@@ -100,7 +110,6 @@ class ChessModel {
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
 
-
     private fun getAllValidMoves(): MutableList<ChessMove> {
         enPassent = null
         // 1. generate all moves
@@ -110,11 +119,9 @@ class ChessModel {
         // 2. for each move make the move
         // 3. generate all opponents moves
         // 4. for each opponents move, check for checks
-        Log.d(TAG, "${moves.size}")
         for (i  in moves.size - 1 downTo 0) {
             movePiece(moves[i].from.col, moves[i].from.row, moves[i].to.col, moves[i].to.row)
             if (inCheck()) {
-                Log.d(TAG, moves[i].toString())
                 moves.remove(moves[i])
             }
             loadFEN(staringPosition)
@@ -128,19 +135,25 @@ class ChessModel {
     private fun getAllPossibleMoves(): MutableList<ChessMove> {
         var moves = mutableListOf<ChessMove>()
         for (piece in piecesBox) {
-            for (col in 0..7) {
-                for (row in 0..7) {
-                    val to = ChessSquare(col, row)
-                    val from = ChessSquare(piece.col, piece.row)
-                    val moveString = getMoveString(from, to)
-                    if (canPieceMove(from, to)) {
-                        moves.add(ChessMove(piece, from, to, moveString))
+            if (piece.player == playerToMove) {
+                for (col in 0..7) {
+                    for (row in 0..7) {
+                        val to = ChessSquare(col, row)
+                        val from = ChessSquare(piece.col, piece.row)
+                        val moveString = getMoveString(from, to)
+                        if (canPieceMove(from, to)) {
+                            moves.add(ChessMove(piece, from, to, moveString))
+                        }
                     }
                 }
             }
         }
 
         return moves
+    }
+
+    fun getValidMovesForView () : MutableList<ChessMove> {
+        return validMoves
     }
 
     private fun inCheck(): Boolean {
@@ -247,26 +260,29 @@ class ChessModel {
             (from.row == to.row && isRowBetweenClear(from, to)))
     }
 
-    private fun canQueenMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
-        return (canRockMove(from, to) || canBishopMove(from, to, chessPiece))
+    private fun canQueenMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        return (canRockMove(from, to) || canBishopMove(from, to))
     }
 
-    private fun canBishopMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
+    private fun canBishopMove(from: ChessSquare, to: ChessSquare) : Boolean {
         if (isDiagonalBetweenClear(from, to)) {
             return true
         }
         return false
     }
 
-    private fun canKingMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece) : Boolean {
-        if (canRockMove(from, to) || canBishopMove(from, to,chessPiece)) {
+    private fun canKingMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        if (canRockMove(from, to) || canBishopMove(from, to)) {
             return ((abs(from.col - to.col) == 1) &&
                     (abs(from.row - to.row) == 0 || abs(from.row - to.row) == 1)) ||
                     ((abs(from.row - to.row) == 1) &&
                             (abs(from.col - to.col) == 0 || abs(from.col - to.col) == 1))
-
         }
         return false
+    }
+
+    private fun canKingCastle(from: ChessSquare,to: ChessSquare) {
+
     }
 
     private fun canPawnMove(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
@@ -380,9 +396,9 @@ class ChessModel {
         return when(movingPiece.chessPieceName) {
             ChessPieceName.KNIGHT -> canKnightMove(from, to)
             ChessPieceName.ROOK -> canRockMove(from, to)
-            ChessPieceName.BISHOP -> canBishopMove(from, to, movingPiece)
-            ChessPieceName.QUEEN -> canQueenMove(from, to, movingPiece)
-            ChessPieceName.KING -> canKingMove(from, to, movingPiece)
+            ChessPieceName.BISHOP -> canBishopMove(from, to)
+            ChessPieceName.QUEEN -> canQueenMove(from, to)
+            ChessPieceName.KING -> canKingMove(from, to)
             ChessPieceName.PAWN -> canPawnMove(from, to, movingPiece)
         }
     }
@@ -470,7 +486,7 @@ class ChessModel {
          }
          return fen
     }
-    fun loadFEN (fen: String) {
+    private fun loadFEN (fen: String) {
         piecesBox.removeAll(piecesBox)
         var fenString = fen
         fenString = fenString.replace("8","........")

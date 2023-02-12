@@ -4,11 +4,8 @@ interface ChessDelegate {
     fun pieceAt(square: ChessSquare) : ChessPiece?
     fun movePiece(from: ChessSquare, to: ChessSquare)
     fun toFen(): String
-
     fun stringToChessSquare(squareString: String) : ChessSquare
 
-    fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean
-
-    fun resetCheckingPieces()
+    fun getValidMovesForView () : MutableList<ChessMove>
 
 }

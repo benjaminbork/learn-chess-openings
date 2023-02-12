@@ -24,6 +24,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private var movingPieceY : Float = -1f
     private var movingPieceBitMap : Bitmap? = null
     private  var movingPiece : ChessPiece? = null
+    private var moves = mutableListOf<ChessMove>()
+
 
     private val svgResIDs = setOf(
         R.drawable.bq,
@@ -72,6 +74,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         when (event.action) {
 
             MotionEvent.ACTION_DOWN -> {
+                chessDelegate?.getValidMovesForView()?.let { moves.addAll(it) }
                 fromCol = ((event.x - originX) / cellSide).toInt()
                 fromRow = 7 - ((event.y - originY) / cellSide).toInt()
                 chessDelegate?.pieceAt(ChessSquare(fromCol,fromRow))?.let {
@@ -93,6 +96,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 chessDelegate?.movePiece(ChessSquare(fromCol,fromRow), ChessSquare(col,row))
                 movingPieceBitMap = null
                 movingPiece = null
+                moves.removeAll(moves)
 
             }
         }
@@ -134,11 +138,22 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     }
 
     private fun drawChessBoardWithHeatMap(canvas: Canvas) {
-        var isPossibleMove : Boolean?
+        var isPossibleMove = false
         for (row in 0..7 ) {
             for (col in 0..7) {
-                isPossibleMove =movingPiece?.let { chessDelegate?.canPieceMove(ChessSquare(it.col,it.row), ChessSquare(col, row)) }
+                movingPiece?.let {
+                    if (moves != null) {
+                        for (move in moves) {
+                            if (ChessSquare(it.col, it.row) == move.from
+                                && it.chessPieceName == move.chessPiece.chessPieceName
+                                && move.to == ChessSquare(col,row)) {
+                                isPossibleMove =  true
+                            }
+                        }
+                    }
+                }
                 drawSquareAtWithHeatMap(canvas,col,row,((row + col) % 2 == 0), isPossibleMove)
+                isPossibleMove = false
             }
 
 
