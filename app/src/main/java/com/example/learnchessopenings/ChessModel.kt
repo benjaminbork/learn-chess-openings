@@ -9,6 +9,7 @@ class ChessModel {
     private var validMoves = mutableListOf<ChessMove>()
     private var playerToMove : ChessPlayer = ChessPlayer.WHITE
     private var lastMove : ChessLastMove? = null
+    private var checkingFutureMoves = false
 
     // pawn variables
     private var enPassant : ChessPiece? = null
@@ -85,7 +86,19 @@ class ChessModel {
         }
 
         if (move in validMoves) {
+            // check for enPassant
+            if (move?.chessPiece?.chessPieceName == ChessPieceName.PAWN) {
+                if (canPawnMove(move.from, move.to, move.chessPiece)) {
+                    lastMove?.let {
+                        if (enPassant != null) {
+                            piecesBox.remove(it.chessPiece)
+                        }
+                    }
+                }
+            }
+            // move piece
             movePiece(from.col, from.row,to.col,to.row)
+            // set last move and more checks
             lastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
             lastMove?.let {
                 // check if last move was a king move
@@ -153,14 +166,12 @@ class ChessModel {
             piecesBox.remove(it)
         }
         piecesBox.remove(movingPiece)
-        if (enPassant != null) {
-            lastMove?.let { piecesBox.remove(it.chessPiece) }
-        }
         piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.chessPieceName, movingPiece.resID))
     }
 
     private fun getAllValidMoves(): MutableList<ChessMove> {
         enPassant = null
+        checkingFutureMoves = true
         var moves = getAllPossibleMoves()
         val staringPosition = toFen()
         for (i  in moves.size - 1 downTo 0) {
@@ -170,7 +181,7 @@ class ChessModel {
             }
             loadFEN(staringPosition)
         }
-
+        checkingFutureMoves = false
         return moves
 
     }
@@ -414,6 +425,7 @@ class ChessModel {
     }
 
     private fun canPawnCaptureEnPassant(from: ChessSquare, to: ChessSquare, chessPiece: ChessPiece): Boolean {
+
         var last = lastMove ?: return false
         if (last.chessPiece.chessPieceName != ChessPieceName.PAWN) return false
         if (last.chessPiece.player == chessPiece.player) return false
@@ -425,6 +437,7 @@ class ChessModel {
             (from.row == 5 || from.row == 4) &&
             abs(from.col - last.to.col) == 1)
         {
+            if (checkingFutureMoves) return true
             enPassant = last.chessPiece
             return true
         }
@@ -433,6 +446,7 @@ class ChessModel {
             (from.row == 3 || from.row == 2) &&
             abs(from.col - last.to.col) == 1)
         {
+            if (checkingFutureMoves) return true
             enPassant = last.chessPiece
             return true
         }
