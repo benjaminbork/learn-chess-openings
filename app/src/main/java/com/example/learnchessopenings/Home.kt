@@ -33,7 +33,6 @@ class Home : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         db = DbHelper(context)
-        val dbb = db.readableDatabase
     }
 
     override fun onCreateView(
@@ -49,7 +48,7 @@ class Home : Fragment() {
     }
 
     private fun writeDailyDate(homeView: View) {
-        val monthName = SimpleDateFormat("MMMM").format(Calendar.getInstance().getTime())
+        val monthName = SimpleDateFormat("MMMM").format(Calendar.getInstance().time)
 
         val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         val dayText = when(day) {
