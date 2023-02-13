@@ -34,12 +34,13 @@ class ChessModel {
     // puzzle variables
     private var solution = ""
     private var puzzlePgn = ""
+    private var puzzleStartingPosition = ""
+    private var puzzlePlayerToMove : ChessPlayer? = null
     init {
         reset()
     }
 
     fun reset() {
-        getPuzzleData()
         lastMove = null
         piecesBox.removeAll(piecesBox)
         piecesBox.add(ChessPiece(0, 0,ChessPlayer.WHITE, ChessPieceName.ROOK,R.drawable.wr))
@@ -729,6 +730,236 @@ class ChessModel {
             }
         }
     }
+
+    private fun stringToCol (string: String) : Int? {
+        return when (string) {
+            "a" -> 0
+            "b" -> 1
+            "c" -> 2
+            "d" -> 3
+            "e" -> 4
+            "f" -> 5
+            "g" -> 6
+            "h" -> 7
+            else -> null
+        }
+    }
+
+    private fun stringToRow (string: String) : Int? {
+        return when (string) {
+            "1" -> 0
+            "2" -> 1
+            "3" -> 2
+            "4" -> 3
+            "5" -> 4
+            "6" -> 5
+            "7" -> 6
+            "8" -> 7
+            else -> null
+        }
+    }
+
+    private fun loadPuzzleStartingPosition() {
+        if (puzzlePgn.isEmpty()) return
+        val pgnMoves = puzzlePgn.split(" ")
+        Log.d(TAG, pgnMoves.toString())
+
+
+        var i = 0
+
+        for (pgnMove in pgnMoves) {
+            val legalMoves = getAllValidMoves()
+            i += 1
+            // understand the meaning behind the pgn move
+            var pgnMoveString = pgnMove
+            var movingPiece : ChessPieceName? = null
+            var movingPieceCol : Int? = null
+            var movingPieceRow : Int? = null
+            var toSquare : ChessSquare? = null
+            var moved = false
+
+
+            pgnMoveString = pgnMoveString.replace("+", "")
+            pgnMoveString = pgnMoveString.replace("x", "")
+
+            Log.d(TAG,"-------------")
+            Log.d(TAG,"$i")
+            Log.d(TAG,"String:$pgnMoveString")
+
+            Log.d(TAG,"first char:${pgnMoveString[0].toString()}")
+
+            // pawn moves
+            if (pgnMoveString.length == 2) {
+                movingPiece = ChessPieceName.PAWN
+                toSquare = stringToChessSquare(pgnMoveString)
+            }
+            if ((pgnMoveString.length == 3)
+                && (pgnMoveString[0].toString() == "a"
+                        || pgnMoveString[0].toString() == "b"
+                        || pgnMoveString[0].toString() == "c"
+                        || pgnMoveString[0].toString() == "d"
+                        || pgnMoveString[0].toString() == "e"
+                        || pgnMoveString[0].toString() == "f"
+                        || pgnMoveString[0].toString() == "g"
+                        || pgnMoveString[0].toString() == "h"
+                        )
+            ) {
+                movingPiece = ChessPieceName.PAWN
+                toSquare = stringToChessSquare(pgnMoveString.substring(1,3))
+                movingPieceCol = stringToCol(pgnMoveString[0].toString())
+            }
+
+            // bishop moves
+            if ((pgnMoveString.length == 3)
+                && (pgnMoveString[0].toString() == "B")) {
+                movingPiece = ChessPieceName.BISHOP
+                toSquare = stringToChessSquare(pgnMoveString.substring(1,3))
+
+
+            }
+
+            // queen moves
+            if ((pgnMoveString.length == 3)
+                && (pgnMoveString[0].toString() == "Q")) {
+                movingPiece = ChessPieceName.QUEEN
+                toSquare = stringToChessSquare(pgnMoveString.substring(1,3))
+            }
+
+            // king moves
+            if ((pgnMoveString.length == 3)
+                && (pgnMoveString[0].toString() == "K")) {
+                movingPiece = ChessPieceName.KING
+                toSquare = stringToChessSquare(pgnMoveString.substring(1,3))
+            }
+
+            if (pgnMoveString == "O-O") {
+                movingPiece = ChessPieceName.KING
+                toSquare = if (playerToMove == ChessPlayer.WHITE) {
+                    ChessSquare(6,0)
+                } else {
+                    ChessSquare(6,7)
+                }
+            }
+
+            if (pgnMoveString == "O-O-O") {
+                movingPiece = ChessPieceName.KING
+                toSquare = if (playerToMove == ChessPlayer.WHITE) {
+                    ChessSquare(2,0)
+                } else {
+                    ChessSquare(2,7)
+                }
+            }
+
+
+
+            // rook moves
+            if ((pgnMoveString.length == 3)
+                && (pgnMoveString[0].toString() == "R")) {
+                movingPiece = ChessPieceName.ROOK
+                toSquare = stringToChessSquare(pgnMoveString.substring(1,3))
+            }
+
+            if ((pgnMoveString.length == 4)
+                && (pgnMoveString[0].toString() == "R")
+                && (pgnMoveString[1].toString() == "a"
+                        || pgnMoveString[1].toString() == "b"
+                        || pgnMoveString[1].toString() == "c"
+                        || pgnMoveString[1].toString() == "d"
+                        || pgnMoveString[1].toString() == "e"
+                        || pgnMoveString[1].toString() == "f"
+                        || pgnMoveString[1].toString() == "g"
+                        || pgnMoveString[1].toString() == "h"
+                        )
+            ) {
+                movingPiece = ChessPieceName.ROOK
+                toSquare = stringToChessSquare(pgnMoveString.substring(2,4))
+                movingPieceCol = stringToCol(pgnMoveString[1].toString())
+            }
+
+            if ((pgnMoveString.length == 4)
+                && (pgnMoveString[0].toString() == "R")
+                && (pgnMoveString[1].toString() == "1"
+                        || pgnMoveString[1].toString() == "2"
+                        || pgnMoveString[1].toString() == "3"
+                        || pgnMoveString[1].toString() == "4"
+                        || pgnMoveString[1].toString() == "5"
+                        || pgnMoveString[1].toString() == "6"
+                        || pgnMoveString[1].toString() == "7"
+                        || pgnMoveString[1].toString() == "8"
+                        )
+            ) {
+                movingPiece = ChessPieceName.ROOK
+                toSquare = stringToChessSquare(pgnMoveString.substring(2,4))
+                movingPieceRow = stringToRow(pgnMoveString[1].toString())
+            }
+
+            // knight moves
+
+            if ((pgnMoveString.length == 3)
+                && (pgnMoveString[0].toString() =="N")) {
+                movingPiece = ChessPieceName.KNIGHT
+                toSquare = stringToChessSquare(pgnMoveString.substring(1,3))
+            }
+
+            if ((pgnMoveString.length == 4)
+                && (pgnMoveString[0].toString() == "N")
+                && (pgnMoveString[1].toString() == "a"
+                        || pgnMoveString[1].toString() == "b"
+                        || pgnMoveString[1].toString() == "c"
+                        || pgnMoveString[1].toString() == "d"
+                        || pgnMoveString[1].toString() == "e"
+                        || pgnMoveString[1].toString() == "f"
+                        || pgnMoveString[1].toString() == "g"
+                        || pgnMoveString[1].toString() == "h"
+                        )
+            ) {
+                movingPiece = ChessPieceName.KNIGHT
+                toSquare = stringToChessSquare(pgnMoveString.substring(2,4))
+                movingPieceCol = stringToCol(pgnMoveString[1].toString())
+            }
+
+            if ((pgnMoveString.length == 4)
+                && (pgnMoveString[0].toString() == "N")
+                && (pgnMoveString[1].toString() == "1"
+                        || pgnMoveString[1].toString() == "2"
+                        || pgnMoveString[1].toString() == "3"
+                        || pgnMoveString[1].toString() == "4"
+                        || pgnMoveString[1].toString() == "5"
+                        || pgnMoveString[1].toString() == "6"
+                        || pgnMoveString[1].toString() == "7"
+                        || pgnMoveString[1].toString() == "8"
+                        )
+            ) {
+                movingPiece = ChessPieceName.KNIGHT
+                toSquare = stringToChessSquare(pgnMoveString.substring(2,4))
+                movingPieceRow = stringToRow(pgnMoveString[1].toString())
+            }
+
+
+
+
+            Log.d(TAG,"movingpiece:$movingPiece")
+            Log.d(TAG,"toSquare:$toSquare")
+            Log.d(TAG,"col:$movingPieceCol")
+            Log.d(TAG,"row:$movingPieceCol")
+
+            for (move in legalMoves) {
+                if (move.chessPiece.chessPieceName == movingPiece
+                    && toSquare == move.to) {
+                    if ((movingPieceRow == null) && (movingPieceCol == null)) {
+                        movePiece(move.from, toSquare)
+                    }
+                    if (movingPieceCol == move.from.col) {
+                        movePiece(move.from, toSquare)
+                    }
+                    if (movingPieceRow == move.from.row) {
+                        movePiece(move.from, toSquare)
+                    }
+                }
+            }
+        }
+    }
+
     fun getPuzzleData() {
         val baseUrl = "https://lichess.org/"
         val retrofitBuilder = Retrofit.Builder()
@@ -744,12 +975,8 @@ class ChessModel {
                 response: Response<DailyPuzzleData>
             ) {
                 val responseBody = response.body() !!
-
-
-                        solution = responseBody.puzzle.solution.toString()
-                        puzzlePgn = responseBody.game.pgn
-                        Log.d(TAG, solution)
-                        Log.d(TAG, puzzlePgn)
+                solution = responseBody.puzzle.solution.toString()
+                puzzlePgn = responseBody.game.pgn
 
             }
 
@@ -757,11 +984,14 @@ class ChessModel {
                 Log.d(TAG, "error: "+ t.message)
             }
         })
+        if (checkPuzzleFetchSuccess()) {
+            loadPuzzleStartingPosition()
+        }
+
     }
 
     fun checkPuzzleFetchSuccess () : Boolean {
         return (solution.isNotEmpty() && puzzlePgn.isNotEmpty())
     }
-
 
 }
