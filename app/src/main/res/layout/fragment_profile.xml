@@ -42,7 +42,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/progressCount2"
+                android:id="@+id/currentRank"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -56,21 +56,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/username" />
 
             <TextView
-                android:id="@+id/progressCount3"
+                android:id="@+id/xpNextRank"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="X XP to RANK"
+                android:text="Highest Rank Achieved"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="@android:color/primary_text_light"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar3" />
+                app:layout_constraintTop_toBottomOf="@+id/rankBar" />
 
             <ProgressBar
-                android:id="@+id/progressBar3"
+                android:id="@+id/rankBar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -78,11 +78,11 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 android:max="10"
-                android:progress="6"
+                android:progress="10"
                 android:progressTint="#4E6C50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressCount2" />
+                app:layout_constraintTop_toBottomOf="@+id/currentRank" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/xp_container"
@@ -94,7 +94,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/streak_container"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressCount3">
+                app:layout_constraintTop_toBottomOf="@+id/xpNextRank">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -130,7 +130,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/xp_container"
-                app:layout_constraintTop_toBottomOf="@+id/progressCount3">
+                app:layout_constraintTop_toBottomOf="@+id/xpNextRank">
 
                 <TextView
                     android:id="@+id/textView4"
