@@ -162,6 +162,78 @@ class ChessModel {
 
         }
 
+    private fun movePieceWithoutValidation(from: ChessSquare, to: ChessSquare) {
+        val movingPiece = pieceAt(from)
+        val moveString = getMoveString(from, to)
+        val move = movingPiece?.let { ChessMove(it,from, to, moveString) }
+
+        if (move?.chessPiece?.chessPieceName == ChessPieceName.PAWN) {
+                if (canPawnMove(move.from, move.to, move.chessPiece)) {
+                    lastMove?.let {
+                        if (enPassant != null) {
+                            piecesBox.remove(it.chessPiece)
+                        }
+                    }
+                }
+            }
+            // move piece
+            movePiece(from.col, from.row,to.col,to.row)
+            // set last move and more checks
+            lastMove = pieceAt(to)?.let { ChessLastMove(it, from, to)}
+            lastMove?.let {
+                // check if last move was a king move
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING) {
+                    if (it.chessPiece.player == ChessPlayer.WHITE) {
+                        whiteKingLocation = it.to
+                        hasWhiteKingMoved = true
+                    } else {
+                        blackKingLocation = it.to
+                        hasBlackKingMoved = true
+                    }
+                }
+                // check if last move was a rook move
+                if (it.chessPiece.chessPieceName == ChessPieceName.ROOK && playerToMove == ChessPlayer.WHITE) {
+                    if (it.from == ChessSquare(0,0)) {
+                        hasLongWhiteRookMoved = true
+                    }
+                    if (it.from == ChessSquare(7,0)) {
+                        hasShortWhiteRookMoved = true
+                    }
+                }
+                if (it.chessPiece.chessPieceName == ChessPieceName.ROOK && playerToMove == ChessPlayer.BLACK) {
+                    if (it.from == ChessSquare(0,7)) {
+                        hasLongBlackRookMoved = true
+                    }
+                    if (it.from == ChessSquare(7,7)) {
+                        hasShortBlackRookMoved = true
+                    }
+                }
+                // check for short castling
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.WHITE
+                    && it.from == ChessSquare(4,0) && it.to == ChessSquare(6,0)) {
+                    movePiece(7, 0, 5,0)
+                }
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.BLACK
+                    && it.from == ChessSquare(4,7) && it.to == ChessSquare(6,7)) {
+                    movePiece(7, 7, 5,7)
+                }
+
+                // check for long castling
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.WHITE
+                    && it.from == ChessSquare(4,0) && it.to == ChessSquare(2,0)) {
+                    movePiece(0, 0, 3,0)
+                }
+                if (it.chessPiece.chessPieceName == ChessPieceName.KING && playerToMove == ChessPlayer.BLACK
+                    && it.from == ChessSquare(4,7) && it.to == ChessSquare(2,7)) {
+                    movePiece(0, 7, 3,7)
+                }
+
+            }
+            switchPlayerToMove()
+
+
+
+    }
 
 
     private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
@@ -947,17 +1019,19 @@ class ChessModel {
                 if (move.chessPiece.chessPieceName == movingPiece
                     && toSquare == move.to) {
                     if ((movingPieceRow == null) && (movingPieceCol == null)) {
-                        movePiece(move.from, toSquare)
+                        movePieceWithoutValidation(move.from, toSquare)
                     }
                     if (movingPieceCol == move.from.col) {
-                        movePiece(move.from, toSquare)
+                        movePieceWithoutValidation(move.from, toSquare)
                     }
                     if (movingPieceRow == move.from.row) {
-                        movePiece(move.from, toSquare)
+                        movePieceWithoutValidation(move.from, toSquare)
                     }
                 }
             }
+
         }
+        Log.d(TAG, solution)
     }
 
     fun getPuzzleData() {
