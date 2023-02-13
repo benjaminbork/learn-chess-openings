@@ -103,6 +103,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dailyPuzzleCard" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/dashboardRecycler"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/yourCoursesHeader"
+                tools:itemCount="1"
+                tools:listitem="@layout/dashboard_course_detail_card" />
+
+            <TextView
+                android:id="@+id/noCoursesText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:text="It seems like you're not signed up to any courses. Go to the Courses tab to start learning!"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/yourCoursesHeader" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

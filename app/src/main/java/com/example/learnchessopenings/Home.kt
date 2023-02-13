@@ -2,12 +2,18 @@ package com.example.learnchessopenings
 
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.provider.BaseColumns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.learnchessopenings.DbHelper
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.learnchessopenings.Adapters.dashboardAdapter
+import com.example.learnchessopenings.Models.course
+import com.example.learnchessopenings.ViewModels.dashboardViewModel
 import java.text.SimpleDateFormat
 
 // TODO: Rename parameter arguments, choose names that match
@@ -41,6 +47,34 @@ class Home : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val homeView = inflater.inflate(R.layout.fragment_home, container, false)
+
+        val dashboardRecycler = homeView.findViewById<RecyclerView>(R.id.dashboardRecycler)
+        dashboardRecycler.layoutManager = LinearLayoutManager(context)
+
+        val data = ArrayList<dashboardViewModel>()
+        val readDb = db.readableDatabase
+        val cursor = readDb.query(
+            course.Course.TABLE_NAME,
+            arrayOf(BaseColumns._ID, course.Course.COLUMN_NAME_TITLE, course.Course.COLUMN_NAME_VARIATIONS),
+            "${course.Course.COLUMN_NAME_ACTIVE} = 1",
+            null,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            while(cursor.moveToNext()) {
+                data.add(dashboardViewModel(getString(1)))
+            }
+        }
+        cursor.close()
+
+        if(data.size == 0) {
+            val noCoursesText = homeView.findViewById<TextView>(R.id.noCoursesText)
+            noCoursesText.visibility = View.VISIBLE
+        }
+
+        dashboardRecycler.adapter = dashboardAdapter(data)
 
         writeDailyDate(homeView)
 
