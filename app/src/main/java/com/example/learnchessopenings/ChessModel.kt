@@ -1031,6 +1031,8 @@ class ChessModel {
             }
 
         }
+        validMoves.removeAll(validMoves)
+        validMoves.addAll(getAllValidMoves())
         Log.d(TAG, solution)
     }
 
