@@ -1,5 +1,6 @@
 package com.example.learnchessopenings
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Courses.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Courses : Fragment() {
+class Courses : Fragment(), courseAdapter.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -72,7 +73,13 @@ class Courses : Fragment() {
         }
         cursor.close()
 
-        courseRecycler.adapter = courseAdapter(data)
+        courseRecycler.adapter = courseAdapter(data, this)
+    }
+
+    override fun onItemClick(id: Int) {
+        val intent = Intent(context, DetailedCourse::class.java)
+        intent.putExtra("id", id)
+        startActivity(intent)
     }
 
     override fun onDestroy() {
