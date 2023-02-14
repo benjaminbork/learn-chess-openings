@@ -48,6 +48,14 @@ class Home : Fragment() {
         // Inflate the layout for this fragment
         val homeView = inflater.inflate(R.layout.fragment_home, container, false)
 
+        populateRecycler(homeView)
+
+        writeDailyDate(homeView)
+
+        return homeView
+    }
+
+    private fun populateRecycler(homeView: View) {
         val dashboardRecycler = homeView.findViewById<RecyclerView>(R.id.dashboardRecycler)
         dashboardRecycler.layoutManager = LinearLayoutManager(context)
 
@@ -55,7 +63,7 @@ class Home : Fragment() {
         val readDb = db.readableDatabase
         val cursor = readDb.query(
             course.Course.TABLE_NAME,
-            arrayOf(BaseColumns._ID, course.Course.COLUMN_NAME_TITLE, course.Course.COLUMN_NAME_VARIATIONS),
+            null,
             "${course.Course.COLUMN_NAME_ACTIVE} = 1",
             null,
             null,
@@ -64,21 +72,19 @@ class Home : Fragment() {
         )
         with(cursor) {
             while(cursor.moveToNext()) {
-                data.add(dashboardViewModel(getString(1)))
+                data.add(dashboardViewModel(getString(1), 2, 7, getString(4), getInt(5)))
             }
         }
         cursor.close()
 
         if(data.size == 0) {
+            // Sets a text, telling the user about getting courses, to visible if they're not yet
+            // in any courses
             val noCoursesText = homeView.findViewById<TextView>(R.id.noCoursesText)
             noCoursesText.visibility = View.VISIBLE
         }
 
         dashboardRecycler.adapter = dashboardAdapter(data)
-
-        writeDailyDate(homeView)
-
-        return homeView
     }
 
     private fun writeDailyDate(homeView: View) {
