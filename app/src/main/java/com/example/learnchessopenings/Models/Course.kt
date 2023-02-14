@@ -21,7 +21,7 @@ object course {
         ${Course.COLUMN_NAME_BLACK} INTEGER,
         ${Course.COLUMN_NAME_DESCRIPTION} TEXT,
         ${Course.COLUMN_NAME_IMAGE_ID} INT,
-        ${Course.COLUMN_NAME_VARIATIONS} BLOB
+        ${Course.COLUMN_NAME_VARIATIONS} STRING
         )
     """
 
