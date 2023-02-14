@@ -22,11 +22,18 @@ class dashboardAdapter(val mList: List<dashboardViewModel>) : RecyclerView.Adapt
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val ItemsViewModel = mList[position]
 
+        var progress = 0
+        for(variation in ItemsViewModel.variations) {
+            if(variation["learned"] == 1) {
+                progress += 1
+            }
+        }
+
         holder.headerText.text = ItemsViewModel.header
         holder.descriptionText.text = ItemsViewModel.description
-        holder.progressCount.text = "${ItemsViewModel.progress}/${ItemsViewModel.totalProgress}"
-        holder.progressBar.progress = ItemsViewModel.progress
-        holder.progressBar.max = ItemsViewModel.totalProgress
+        holder.progressCount.text = "${progress}/${ItemsViewModel.variations.size}"
+        holder.progressBar.progress = progress
+        holder.progressBar.max = ItemsViewModel.variations.size
         holder.img.setImageResource(ItemsViewModel.imageId)
 
         holder.reviewBtn.setOnClickListener {

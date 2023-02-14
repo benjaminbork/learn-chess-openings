@@ -3,6 +3,7 @@ package com.example.learnchessopenings
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.provider.BaseColumns
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnchessopenings.Adapters.dashboardAdapter
 import com.example.learnchessopenings.Models.course
+import com.example.learnchessopenings.Models.variation
 import com.example.learnchessopenings.ViewModels.dashboardViewModel
 import java.text.SimpleDateFormat
 
@@ -72,7 +74,7 @@ class Home : Fragment() {
         )
         with(cursor) {
             while(cursor.moveToNext()) {
-                data.add(dashboardViewModel(getString(1), 2, 7, getString(4), getInt(5)))
+                data.add(dashboardViewModel(getString(1), getString(4), getInt(5), variation.getVariations(getString(6), db)))
             }
         }
         cursor.close()
