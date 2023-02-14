@@ -186,6 +186,47 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             )
-        )
+        ),
+        mapOf(
+            course.Course.COLUMN_NAME_TITLE to "ANOTHER Example course",
+            course.Course.COLUMN_NAME_BLACK to 0,
+            course.Course.COLUMN_NAME_DESCRIPTION to "This is a description!",
+            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable.bq,
+            course.Course.COLUMN_NAME_VARIATIONS to arrayOf(
+                mapOf(
+                    variation.Variation.COLUMN_NAME_TITLE to "Fiirst Variation",
+                    variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        "I don't know how FEN's work pls help",
+                        "Seriously, idk"
+                    ),
+                    variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
+                        "Comment on the first FEN",
+                        "Comment on the second FEN"
+                    )
+                ),
+                mapOf(
+                    variation.Variation.COLUMN_NAME_TITLE to "Second Variation",
+                    variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        "I still don't know how FEN's work pls help",
+                        "Seriously, idk"
+                    ),
+                    variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
+                        "Comment on the first FEN",
+                        "Comment on the second FEN"
+                    )
+                ),
+                mapOf(
+                    variation.Variation.COLUMN_NAME_TITLE to "Third Variation",
+                    variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        "I still don't know how FEN's work pls help",
+                        "Seriously, idk"
+                    ),
+                    variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
+                        "Comment on the first FEN",
+                        "Comment on the second FEN"
+                    )
+                )
+            )
+        ),
     )
 }
