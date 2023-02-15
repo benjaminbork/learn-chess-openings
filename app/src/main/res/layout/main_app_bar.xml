@@ -11,9 +11,6 @@
             android:layout_height="wrap_content"
             android:background="@color/background_grey"
             android:minHeight="?attr/actionBarSize"
-            android:paddingStart="60dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="20dp"
             android:theme="?attr/actionBarTheme"
             app:title="Test"
             app:titleTextAppearance="@style/Toolbar.TitleText" />
