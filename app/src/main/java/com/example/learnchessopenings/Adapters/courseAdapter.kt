@@ -29,10 +29,6 @@ class courseAdapter(val mList: List<courseViewModel>, private val listener: OnIt
 
         holder.headerText.text = ItemsViewModel.title
         holder.img.setImageResource(ItemsViewModel.img)
-
-        /* holder.card.setOnClickListener {
-            // This is where card click code goes
-        } */
     }
 
     override fun getItemCount(): Int {

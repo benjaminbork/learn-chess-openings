@@ -38,7 +38,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/progressCount"
+                android:id="@+id/variationProgressCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -52,7 +52,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ProgressBar
-                android:id="@+id/progressBar2"
+                android:id="@+id/variationProgressBar"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -61,22 +61,35 @@
                 android:max="100"
                 android:progress="5"
                 android:progressTint="#4E6C50"
-                app:layout_constraintBottom_toBottomOf="@+id/progressCount"
+                app:layout_constraintBottom_toBottomOf="@+id/variationProgressCount"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/progressCount"
-                app:layout_constraintTop_toTopOf="@+id/progressCount" />
+                app:layout_constraintStart_toEndOf="@+id/variationProgressCount"
+                app:layout_constraintTop_toTopOf="@+id/variationProgressCount" />
+
+            <TextView
+                android:id="@+id/courseDetailDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:text="Here goes the description"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/variationProgressBar" />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/courseDetailImage"
                 android:layout_width="0dp"
                 android:layout_height="130dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:background="#61187040"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_max="120dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressCount"
+                app:layout_constraintTop_toBottomOf="@+id/courseDetailDescription"
                 app:srcCompat="@drawable/ic_launcher_background" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -89,7 +102,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"
+                app:layout_constraintTop_toBottomOf="@+id/courseDetailImage"
                 tools:itemCount="11"
                 tools:listitem="@layout/course_detail_card_element" />
         </androidx.constraintlayout.widget.ConstraintLayout>
