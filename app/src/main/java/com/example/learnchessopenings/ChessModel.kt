@@ -1051,4 +1051,8 @@ class ChessModel {
         return (solution.isNotEmpty() && puzzlePgn.isNotEmpty())
     }
 
+    fun checkPuzzleLoaded () : Boolean {
+        return  (puzzleStartingPosition.isNotEmpty())
+    }
+
 }
