@@ -1,10 +1,14 @@
 package com.example.learnchessopenings
 
+import android.icu.util.Calendar
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.learnchessopenings.DbHelper
+import android.widget.TextView
+import java.text.SimpleDateFormat
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +24,7 @@ class Home : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var db: DbHelper = DbHelper(context)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +32,7 @@ class Home : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        db = DbHelper(context)
     }
 
     override fun onCreateView(
@@ -34,7 +40,33 @@ class Home : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        val homeView = inflater.inflate(R.layout.fragment_home, container, false)
+
+        writeDailyDate(homeView)
+
+        return homeView
+    }
+
+    private fun writeDailyDate(homeView: View) {
+        val monthName = SimpleDateFormat("MMMM").format(Calendar.getInstance().time)
+
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        val dayText = when(day) {
+            1, 21, 31 -> "${day}st"
+            2, 22 -> "${day}nd"
+            3, 23 -> "${day}rd"
+            else -> {
+                "${day}th"
+            }
+        }
+
+        val dailyDateText: TextView = homeView.findViewById(R.id.dailyPuzzleDate)
+        dailyDateText.text = "${dayText} of ${monthName}"
+    }
+
+    override fun onDestroy() {
+        db.close()
+        super.onDestroy()
     }
 
     companion object {

@@ -15,17 +15,8 @@ import java.io.IOException
 
 
 const val TAG = "ChessActivity"
-class ChessActivity : AppCompatActivity(), ChessDelegate{
+class PuzzleActivity : AppCompatActivity(), ChessDelegate{
     var chessModel = ChessModel()
-    var exampleGame : Array<String> = arrayOf(
-        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-        "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
-        "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR",
-        "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR",
-        "rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR",
-        "rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR"
-    )
-    var i = 0
     private lateinit var chessView : ChessView
     private lateinit var chessHeader : TextView
     private lateinit var chessSubHeader : TextView

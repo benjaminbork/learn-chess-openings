@@ -9,9 +9,7 @@
 
 
     <!-- Login Page -->
-    <string name="lpg_register">Register</string>
-    <string name="lpg_login">Login</string>
-    <string name="lpg_email">Email</string>
-    <string name="lpg_psw">Password</string>
+    <string name="lpg_login">Start Learning</string>
+    <string name="lpg_name">Username</string>
 
 </resources>
