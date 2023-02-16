@@ -1,5 +1,6 @@
 package com.example.learnchessopenings
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -44,6 +45,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private val bitmaps = mutableMapOf<Int, Bitmap?>()
 
     var chessDelegate : ChessDelegate? = null
+
 
     init {
 
@@ -97,6 +99,14 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 movingPieceBitMap = null
                 movingPiece = null
                 moves.removeAll(moves)
+
+                // for puzzles
+                if (chessDelegate?.isPuzzleActive() == true
+                    && chessDelegate?.hasPuzzleMoveMade() == true) {
+                    chessDelegate?.checkIsMoveCorrect()
+                }
+
+
 
             }
         }

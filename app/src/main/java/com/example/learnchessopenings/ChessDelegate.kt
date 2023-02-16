@@ -8,5 +8,10 @@ interface ChessDelegate {
 
     fun getValidMovesForView () : MutableList<ChessMove>
 
+    fun isPuzzleActive () : Boolean
+
+    fun checkIsMoveCorrect()
+
+    fun hasPuzzleMoveMade () : Boolean
 
 }

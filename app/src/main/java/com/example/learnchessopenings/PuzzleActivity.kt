@@ -2,20 +2,13 @@ package com.example.learnchessopenings
 
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintSet.Layout
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.example.learnchessopenings.R.id.chess
 
-import com.example.learnchessopenings.R.id.chessView
-import com.example.learnchessopenings.databinding.ChessScreenBinding
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.HttpException
 import java.io.IOException
@@ -40,6 +33,8 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var learnNavBar : View
     private lateinit var reviewNavBarItems : BottomNavigationView
     private lateinit var reviewNavBar : View
+    private lateinit var returnAppBar : Toolbar
+    private lateinit var loadingDialog : View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,8 +50,10 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         learnNavBar = findViewById(R.id.learnNavBar)
         reviewNavBarItems = findViewById(R.id.reviewNavigationView)
         reviewNavBar = findViewById(R.id.reviewNavBar)
+        returnAppBar = findViewById(R.id.return_app_bar)
+        loadingDialog = findViewById(R.id.loadingDialogInclude)
 
-
+        returnAppBar.title = "Daily Puzzle"
 
         learnNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
@@ -78,6 +75,7 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
                     reviewNavBar.isVisible = false
                     learnNavBar.isVisible = true
                     chessModel.setPuzzleInactive()
+                    chessModel.stopGame()
                     chessView.invalidate()
                 }
             }
@@ -114,12 +112,12 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
                     chessHeader.text = chessModel.getPuzzlePlayerToMove()
                     chessHeader.isVisible = true
                 }
-                chessView.invalidate()
+                loadingDialog.isVisible = false
             } else {
                 Log.d(TAG, "Request failed.")
             }
         }
-
+        chessView.invalidate()
 
     }
 

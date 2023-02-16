@@ -6,11 +6,15 @@ import java.lang.StrictMath.abs
 
 class ChessModel {
     // general game variables
+    private var gameOn = true
+    private var isPuzzle = false
+    private var isOpening = false
     private var piecesBox = mutableSetOf<ChessPiece>()
     private var validMoves = mutableListOf<ChessMove>()
     private var playerToMove : ChessPlayer = ChessPlayer.WHITE
     private var lastMove : ChessLastMove? = null
     private var checkingFutureMoves = false
+    private var previousPosition = ""
 
     // pawn variables
     private var enPassant : ChessPiece? = null
@@ -27,11 +31,11 @@ class ChessModel {
     private var hasShortBlackRookMoved = false
     private var hasLongBlackRookMoved = false
 
-    // puzzle variables
+    // isPuzzle variables
     private var solution = ""
     private var puzzlePgn = ""
     private var puzzleStartingPosition = ""
-    private var puzzlePlayerToMove : ChessPlayer? = null
+    private var puzzlePlayerToMove : ChessPlayer = ChessPlayer.WHITE
     private var puzzlePositions = mutableListOf<String>()
     private var puzzlePositionIndex = 0
     init {
@@ -154,6 +158,7 @@ class ChessModel {
 
                 }
             switchPlayerToMove()
+            previousPosition = toFen()
             validMoves.removeAll(validMoves)
             validMoves.addAll(getAllValidMoves())
             }
@@ -642,6 +647,7 @@ class ChessModel {
 
 
     private fun canPieceMove(from: ChessSquare, to: ChessSquare) : Boolean {
+        if (!gameOn) return false
         if (from.col == to.col && from.row == to.row) return false
         if (isSquareOutsideBoard(to)) return false
         if (pieceAt(from)?.player == pieceAt(to)?.player) return false
@@ -1057,12 +1063,17 @@ class ChessModel {
         Log.d(TAG, "loadPuzzlePositions: $puzzlePositions")
         loadFEN(puzzleStartingPosition)
         playerToMove = puzzlePlayerToMove as ChessPlayer
-
+        validMoves.removeAll(validMoves)
+        validMoves.addAll(getAllValidMoves())
     } 
 
     fun setPuzzlePosition () {
         if (puzzlePositions.isEmpty()) return
         loadFEN(puzzlePositions[puzzlePositionIndex])
+        playerToMove = puzzlePlayerToMove
+        Log.d(TAG, "setPuzzlePosition: $playerToMove")
+        validMoves.removeAll(validMoves)
+        validMoves.addAll(getAllValidMoves())
     }
 
     fun increasePuzzleIndex () {
@@ -1086,6 +1097,53 @@ class ChessModel {
     
     fun checkPuzzleLoaded () : Boolean {
         return  (puzzleStartingPosition.isNotEmpty())
+    }
+
+    fun stopGame () {
+        validMoves.removeAll(validMoves)
+        gameOn = false
+    }
+
+    fun startGame () {
+        gameOn = true
+    }
+
+    fun setPuzzleActive () {
+        isPuzzle = true
+    }
+
+    fun setPuzzleInactive () {
+        isPuzzle = false
+    }
+
+    fun isPuzzleActive () : Boolean {
+        return isPuzzle
+    }
+
+    fun isPuzzleCompleted () : Boolean {
+        return (puzzlePositionIndex == puzzlePositions.size - 1)
+    }
+
+    fun isMoveCorrect () : Boolean {
+        val currentFen = toFen()
+        return (currentFen == puzzlePositions[puzzlePositionIndex])
+    }
+
+    fun hasPuzzleMoveMade () : Boolean {
+        val currentFen = toFen()
+        return if (puzzlePositionIndex == 0) {
+            currentFen != puzzlePositions[puzzlePositionIndex]
+        } else {
+            (currentFen != puzzlePositions[puzzlePositionIndex - 1])
+        }
+    }
+
+    fun getPuzzlePlayerToMove () : String {
+        return if (puzzlePlayerToMove == ChessPlayer.WHITE) {
+            "White to move!"
+        } else {
+            "Black to move!"
+        }
     }
 
 }
