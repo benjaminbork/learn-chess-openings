@@ -4,16 +4,14 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_grey">
+
         <androidx.appcompat.widget.Toolbar
-            android:paddingStart="60dp"
-            android:paddingTop="10dp"
-            app:title="Test"
-            android:paddingBottom="20dp"
             android:id="@+id/main_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/background_grey"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
-            app:titleTextAppearance="@style/Toolbar.TitleText"/>
+            app:title="Test"
+            app:titleTextAppearance="@style/Toolbar.TitleText" />
 </RelativeLayout>

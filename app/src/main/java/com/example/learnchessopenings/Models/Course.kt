@@ -8,6 +8,8 @@ object course {
         const val COLUMN_NAME_TITLE = "title"
         const val COLUMN_NAME_ACTIVE = "active"
         const val COLUMN_NAME_BLACK = "black"
+        const val COLUMN_NAME_DESCRIPTION = "description"
+        const val COLUMN_NAME_IMAGE_ID = "image"
         const val COLUMN_NAME_VARIATIONS = "variations"
     }
 
@@ -17,7 +19,9 @@ object course {
         ${Course.COLUMN_NAME_TITLE} TEXT,
         ${Course.COLUMN_NAME_ACTIVE} INTEGER,
         ${Course.COLUMN_NAME_BLACK} INTEGER,
-        ${Course.COLUMN_NAME_VARIATIONS} BLOB
+        ${Course.COLUMN_NAME_DESCRIPTION} TEXT,
+        ${Course.COLUMN_NAME_IMAGE_ID} INT,
+        ${Course.COLUMN_NAME_VARIATIONS} TEXT
         )
     """
 

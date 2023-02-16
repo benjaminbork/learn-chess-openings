@@ -3,12 +3,19 @@ package com.example.learnchessopenings
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.learnchessopenings.Adapters.dashboardAdapter
+import com.example.learnchessopenings.Models.course
+import com.example.learnchessopenings.Models.variation
+import com.example.learnchessopenings.ViewModels.dashboardViewModel
 import androidx.cardview.widget.CardView
 import java.text.SimpleDateFormat
 
@@ -43,10 +50,45 @@ class Home : Fragment()  {
     ): View? {
         // Inflate the layout for this fragment
         val homeView = inflater.inflate(R.layout.fragment_home, container, false)
+        
+        populateRecycler(homeView)
+
         writeDailyDate(homeView)
 
         return homeView
     }
+
+
+    private fun populateRecycler(homeView: View) {
+        val dashboardRecycler = homeView.findViewById<RecyclerView>(R.id.dashboardRecycler)
+        dashboardRecycler.layoutManager = LinearLayoutManager(context)
+
+        val data = ArrayList<dashboardViewModel>()
+        val readDb = db.readableDatabase
+        val cursor = readDb.query(
+            course.Course.TABLE_NAME,
+            null,
+            "${course.Course.COLUMN_NAME_ACTIVE} = 1",
+            null,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            while(cursor.moveToNext()) {
+                data.add(dashboardViewModel(getString(1), getString(4), getInt(5), variation.getVariations(getString(6), db)))
+            }
+        }
+        cursor.close()
+
+        if(data.size == 0) {
+            // Sets a text, telling the user about getting courses, to visible if they're not yet
+            // in any courses
+            val noCoursesText = homeView.findViewById<TextView>(R.id.noCoursesText)
+            noCoursesText.visibility = View.VISIBLE
+        }
+
+        dashboardRecycler.adapter = dashboardAdapter(data)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,6 +97,7 @@ class Home : Fragment()  {
             puzzle.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(puzzle)
         }
+
     }
 
     private fun writeDailyDate(homeView: View) {
