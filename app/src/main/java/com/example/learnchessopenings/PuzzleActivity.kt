@@ -1,5 +1,6 @@
 package com.example.learnchessopenings
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -46,6 +47,8 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
 
         returnAppBar.title = "Daily Puzzle"
 
+
+
         learnNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.previous -> {
@@ -73,9 +76,15 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
             true
         }
 
+        returnAppBar.setNavigationOnClickListener{
+            val overview = Intent (applicationContext, OverviewActivity::class.java)
+            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(overview)
+            finish()
+        }
+
         // load puzzle
         lifecycleScope.launchWhenCreated {
-            // TODO add progress bar
             val response = try {
                 RetrofitInstance.api.getData()
             } catch (e: IOException) {
