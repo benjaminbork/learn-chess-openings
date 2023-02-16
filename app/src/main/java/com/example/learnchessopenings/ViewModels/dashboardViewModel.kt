@@ -5,4 +5,4 @@ data class dashboardViewModel(
     val description: String,
     val imageId: Int,
     val variations: ArrayList<Map<String, Any>>
-) {}
+)

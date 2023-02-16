@@ -109,23 +109,33 @@
 
     </androidx.cardview.widget.CardView>
 
-    <include
+    <Button
         android:id="@+id/learnButton"
-        layout="@layout/light_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="48dp"
+        android:backgroundTint="#FFFBFE"
+        android:text="Learn Next"
+        android:textColor="#4E6C50"
+        android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/reviewButton"
-        app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView3"
+        app:strokeColor="#4E6C50" />
 
-    <include
+    <Button
         android:id="@+id/reviewButton"
-        layout="@layout/dark_button"
+        style="@style/Widget.Material3.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#4E6C50"
+        android:text="Review All (X)"
+        android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/learnButton"
         app:layout_constraintEnd_toStartOf="@+id/learnButton"
         app:layout_constraintStart_toStartOf="parent"

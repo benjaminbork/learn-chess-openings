@@ -2,15 +2,20 @@ package com.example.learnchessopenings
 
 import android.os.Bundle
 import android.provider.BaseColumns
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.learnchessopenings.Adapters.detailedCourseAdapter
 import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
+import com.example.learnchessopenings.ViewModels.detailedCourseViewModel
 
 
-class DetailedCourse : AppCompatActivity() {
+class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickListener {
     private var db: DbHelper = DbHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +30,6 @@ class DetailedCourse : AppCompatActivity() {
     }
 
     private fun populatePage(courseId: Int) {
-
         val data = getData(courseId)
 
         val mainAppBar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.main_app_bar)
@@ -49,6 +53,40 @@ class DetailedCourse : AppCompatActivity() {
 
         val courseImg = findViewById<ImageView>(R.id.courseDetailImage)
         courseImg.setImageResource(data[course.Course.COLUMN_NAME_IMAGE_ID] as Int)
+
+        val reviewBtn = findViewById<Button>(R.id.reviewButton)
+        reviewBtn.text = "Review All (${progress})"
+        reviewBtn.setOnClickListener {
+            // Review all button code
+
+        }
+
+        val learnBtn = findViewById<Button>(R.id.learnButton)
+        learnBtn.text = "Learn Next"
+        learnBtn.setOnClickListener {
+            // Learn next button code
+
+        }
+
+        populateRecycler(findViewById(R.id.recyclerView), variations)
+    }
+
+    private fun populateRecycler(recyclerView: RecyclerView, variations: ArrayList<Map<String, *>>) {
+        val data = ArrayList<detailedCourseViewModel>()
+        for(vari in variations) {
+            data.add(detailedCourseViewModel(
+                vari[BaseColumns._ID] as Int,
+                vari[variation.Variation.COLUMN_NAME_TITLE].toString(),
+                if(vari[variation.Variation.COLUMN_NAME_LEARNED] as Int != 1) false else true
+            ))
+        }
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = detailedCourseAdapter(data, this)
+    }
+
+    override fun onItemClick(id: Int) {
+        TODO("Not yet implemented")
     }
 
     private fun getData(courseId: Int): Map<String, Any> {
