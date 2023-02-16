@@ -1,5 +1,6 @@
 package com.example.learnchessopenings
 
+import android.content.Intent
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.widget.Button
@@ -32,8 +33,14 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
     private fun populatePage(courseId: Int) {
         val data = getData(courseId)
 
-        val mainAppBar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.main_app_bar)
-        mainAppBar.title = data[course.Course.COLUMN_NAME_TITLE].toString()
+        val returnAppBar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.returnAppBar)
+        returnAppBar.title = data[course.Course.COLUMN_NAME_TITLE].toString()
+        returnAppBar.setNavigationOnClickListener {
+            val overview = Intent (applicationContext, OverviewActivity::class.java)
+            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(overview)
+            finish()
+        }
 
         var progress = 0
         val variations = data[course.Course.COLUMN_NAME_VARIATIONS] as ArrayList<Map<String, *>>
@@ -58,13 +65,6 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         reviewBtn.text = "Review All (${progress})"
         reviewBtn.setOnClickListener {
             // Review all button code
-
-        }
-
-        val learnBtn = findViewById<Button>(R.id.learnButton)
-        learnBtn.text = "Learn Next"
-        learnBtn.setOnClickListener {
-            // Learn next button code
 
         }
 
