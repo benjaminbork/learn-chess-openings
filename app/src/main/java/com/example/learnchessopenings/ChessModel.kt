@@ -1,11 +1,7 @@
 package com.example.learnchessopenings
 
 import android.util.Log
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.StrictMath.abs
 
 class ChessModel {
@@ -36,6 +32,8 @@ class ChessModel {
     private var puzzlePgn = ""
     private var puzzleStartingPosition = ""
     private var puzzlePlayerToMove : ChessPlayer? = null
+    private var puzzlePositions = mutableListOf<String>()
+    private var puzzlePositionIndex = 0
     init {
         reset()
     }
@@ -1033,24 +1031,59 @@ class ChessModel {
         }
         validMoves.removeAll(validMoves)
         validMoves.addAll(getAllValidMoves())
-        Log.d(TAG, solution)
         puzzleStartingPosition = toFen()
+        puzzlePlayerToMove = playerToMove
         Log.d(TAG, "loadPuzzleStartingPosition: $puzzleStartingPosition")
     }
+    
+    fun loadPuzzlePositions() {
+        if (puzzleStartingPosition.isEmpty() || solution.isEmpty()) return
+        if (puzzlePlayerToMove == null) return
+        puzzlePositions.removeAll(puzzlePositions)
+        puzzlePositions.add(puzzleStartingPosition)
+        var solutionMovesString : String = solution
+        solutionMovesString = solutionMovesString.replace("[", "")
+        solutionMovesString = solutionMovesString.replace("]", "")
+        val solutionMoves = solutionMovesString.split(", ")
+        Log.d(TAG, "loadPuzzlePositions: $solutionMovesString $solutionMoves")
+        
+        for (move in solutionMoves) {
+            val from = stringToChessSquare(move.substring(0, 2))
+            val to = stringToChessSquare(move.substring(2, 4))
+            movePiece(from, to)
+            puzzlePositions.add(toFen())
+        }
 
-    fun setPuzzle () {
+        Log.d(TAG, "loadPuzzlePositions: $puzzlePositions")
         loadFEN(puzzleStartingPosition)
+        playerToMove = puzzlePlayerToMove as ChessPlayer
+
+    } 
+
+    fun setPuzzlePosition () {
+        if (puzzlePositions.isEmpty()) return
+        loadFEN(puzzlePositions[puzzlePositionIndex])
     }
+
+    fun increasePuzzleIndex () {
+        val tempPuzzleIndex = puzzlePositionIndex + 1
+        if (tempPuzzleIndex <= puzzlePositions.size - 1) puzzlePositionIndex = tempPuzzleIndex
+    }
+
+    fun decreasePuzzleIndex () {
+        val tempPuzzleIndex = puzzlePositionIndex - 1
+        if (tempPuzzleIndex >= 0) puzzlePositionIndex = tempPuzzleIndex
+    }
+    
+    
+    
+    
 
     fun setPuzzleData(response : Response<DailyPuzzleData>) {
                 solution = response.body()?.puzzle?.solution.toString()
                 puzzlePgn = response.body()?.game?.pgn.toString()
     }
-
-    fun checkPuzzleFetchSuccess () : Boolean {
-        return (solution.isNotEmpty() && puzzlePgn.isNotEmpty())
-    }
-
+    
     fun checkPuzzleLoaded () : Boolean {
         return  (puzzleStartingPosition.isNotEmpty())
     }

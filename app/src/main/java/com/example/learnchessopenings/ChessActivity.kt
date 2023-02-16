@@ -60,10 +60,11 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         learnNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.previous -> {
-                    Log.d(TAG, "previous touched")
+                    showPreviousPuzzlePosition()
                 }
                 R.id.next -> {
-                    Log.d(TAG, "next touched")
+                    showNextPuzzlePosition()
+
                 }
             }
             true
@@ -95,6 +96,7 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
                 Log.d(TAG, "onCreate: ${response.body()}")
                 chessModel.setPuzzleData(response)
                 chessModel.loadPuzzleStartingPosition()
+                chessModel.loadPuzzlePositions()
                 var i = 0
                 while (i < 10 && !chessModel.checkPuzzleLoaded()) {
                      i += 1
@@ -109,6 +111,8 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
 
 
     }
+
+    // functions for chess delegate
     override fun pieceAt(square: ChessSquare): ChessPiece? {
         return chessModel.pieceAt(square)
     }
@@ -130,7 +134,19 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.getValidMovesForView()
     }
 
+    // function for puzzle
 
+    private fun showNextPuzzlePosition() {
+        chessModel.increasePuzzleIndex()
+        chessModel.setPuzzlePosition()
+        chessView.invalidate()
+    }
+
+    private fun showPreviousPuzzlePosition() {
+        chessModel.decreasePuzzleIndex()
+        chessModel.setPuzzlePosition()
+        chessView.invalidate()
+    }
 
 
 }
