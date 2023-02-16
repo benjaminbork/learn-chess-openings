@@ -831,7 +831,7 @@ class ChessModel {
         }
     }
 
-    private fun loadPuzzleStartingPosition() {
+    fun loadPuzzleStartingPosition() {
         if (puzzlePgn.isEmpty()) return
         val pgnMoves = puzzlePgn.split(" ")
         Log.d(TAG, pgnMoves.toString())
@@ -1034,36 +1034,17 @@ class ChessModel {
         validMoves.removeAll(validMoves)
         validMoves.addAll(getAllValidMoves())
         Log.d(TAG, solution)
+        puzzleStartingPosition = toFen()
+        Log.d(TAG, "loadPuzzleStartingPosition: $puzzleStartingPosition")
     }
 
-    fun getPuzzleData() {
-        val baseUrl = "https://lichess.org/"
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(baseUrl)
-            .build()
-            .create(ApiInterface::class.java)
-        val retrofitData = retrofitBuilder.getData()
+    fun setPuzzle () {
+        loadFEN(puzzleStartingPosition)
+    }
 
-        retrofitData.enqueue(object : Callback<DailyPuzzleData> {
-            override fun onResponse(
-                call: Call<DailyPuzzleData>,
-                response: Response<DailyPuzzleData>
-            ) {
-                val responseBody = response.body() !!
-                solution = responseBody.puzzle.solution.toString()
-                puzzlePgn = responseBody.game.pgn
-
-            }
-
-            override fun onFailure(call: Call<DailyPuzzleData>, t: Throwable) {
-                Log.d(TAG, "error: "+ t.message)
-            }
-        })
-        if (checkPuzzleFetchSuccess()) {
-            loadPuzzleStartingPosition()
-        }
-
+    fun setPuzzleData(response : Response<DailyPuzzleData>) {
+                solution = response.body()?.puzzle?.solution.toString()
+                puzzlePgn = response.body()?.game?.pgn.toString()
     }
 
     fun checkPuzzleFetchSuccess () : Boolean {

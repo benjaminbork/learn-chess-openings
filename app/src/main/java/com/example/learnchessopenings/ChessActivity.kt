@@ -1,14 +1,18 @@
 package com.example.learnchessopenings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import com.example.learnchessopenings.R.id.chess
 
 import com.example.learnchessopenings.R.id.chessView
+import retrofit2.HttpException
+import java.io.IOException
 
 
 const val TAG = "ChessActivity"
@@ -27,16 +31,35 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.chess_screen)
         chessView = findViewById<ChessView>(R.id.chessView)
-        chessModel.reset()
         chessView.chessDelegate = this
-        findViewById<Button>(R.id.reset_btn).setOnClickListener {
-            chessModel.getPuzzleData()
-            chessModel.checkPuzzleFetchSuccess()
 
-            chessView.invalidate()
+
+        // load puzzle
+        lifecycleScope.launchWhenCreated {
+            // TODO add progress bar
+            val response = try {
+                RetrofitInstance.api.getData()
+            } catch (e: IOException) {
+                Log.e(TAG, "Check your internet connection", )
+                return@launchWhenCreated
+            } catch (e: HttpException) {
+                Log.e(TAG, "Unexpected Response", )
+                return@launchWhenCreated
+            }
+            if (response.isSuccessful && response.body() != null) {
+                Log.d(TAG, "Request successful")
+                Log.d(TAG, "onCreate: ${response.body()}")
+                chessModel.setPuzzleData(response)
+                chessModel.loadPuzzleStartingPosition()
+                chessView.invalidate()
+            } else {
+                Log.d(TAG, "Request failed.")
+            }
         }
+
 
     }
     override fun pieceAt(square: ChessSquare): ChessPiece? {
@@ -60,13 +83,7 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.getValidMovesForView()
     }
 
-    override fun getPuzzleData() {
-        return chessModel.getPuzzleData()
-    }
 
-    override fun checkPuzzleFetchSuccess(): Boolean {
-        return chessModel.checkPuzzleFetchSuccess()
-    }
 
 
 }
