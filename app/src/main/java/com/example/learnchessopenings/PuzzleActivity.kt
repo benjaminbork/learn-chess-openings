@@ -15,6 +15,7 @@ import com.example.learnchessopenings.R.id.chess
 
 import com.example.learnchessopenings.R.id.chessView
 import com.example.learnchessopenings.databinding.ChessScreenBinding
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.HttpException
 import java.io.IOException
@@ -40,6 +41,7 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var reviewNavBarItems : BottomNavigationView
     private lateinit var reviewNavBar : View
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +56,6 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         reviewNavBarItems = findViewById(R.id.reviewNavigationView)
         reviewNavBar = findViewById(R.id.reviewNavBar)
 
-        learnNavBar.isVisible = true
 
 
         learnNavBarItems.setOnItemSelectedListener {
@@ -74,6 +75,10 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
             when (it.itemId) {
                 R.id.solution -> {
                     Log.d(TAG, "solution touched")
+                    reviewNavBar.isVisible = false
+                    learnNavBar.isVisible = true
+                    chessModel.setPuzzleInactive()
+                    chessView.invalidate()
                 }
             }
             true
@@ -97,12 +102,18 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
                 chessModel.setPuzzleData(response)
                 chessModel.loadPuzzleStartingPosition()
                 chessModel.loadPuzzlePositions()
+                chessModel.setPuzzleActive()
+                chessModel.increasePuzzleIndex()
                 var i = 0
                 while (i < 10 && !chessModel.checkPuzzleLoaded()) {
                      i += 1
                  }
-                if (chessModel.checkPuzzleLoaded()) chessView.isVisible = true
-
+                if (chessModel.checkPuzzleLoaded()) {
+                    reviewNavBar.isVisible = true
+                    chessView.isVisible = true
+                    chessHeader.text = chessModel.getPuzzlePlayerToMove()
+                    chessHeader.isVisible = true
+                }
                 chessView.invalidate()
             } else {
                 Log.d(TAG, "Request failed.")
@@ -112,7 +123,7 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
 
     }
 
-    // functions for chess delegate
+    // general functions
     override fun pieceAt(square: ChessSquare): ChessPiece? {
         return chessModel.pieceAt(square)
     }
@@ -134,7 +145,11 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.getValidMovesForView()
     }
 
-    // function for puzzle
+    override fun isPuzzleActive(): Boolean {
+        return chessModel.isPuzzleActive()
+    }
+
+    // puzzle functions
 
     private fun showNextPuzzlePosition() {
         chessModel.increasePuzzleIndex()
@@ -146,6 +161,36 @@ class ChessActivity : AppCompatActivity(), ChessDelegate{
         chessModel.decreasePuzzleIndex()
         chessModel.setPuzzlePosition()
         chessView.invalidate()
+    }
+
+    override fun checkIsMoveCorrect() {
+        if (chessModel.isMoveCorrect() && chessModel.isPuzzleCompleted()) {
+        chessHeader.text = "You got the puzzle right"
+            chessModel.stopGame()
+            chessModel.setPuzzleInactive()
+            learnNavBar.isVisible = true
+            reviewNavBar.isVisible = false
+            chessView.invalidate()
+            // TODO add xp and disable puzzle for the current day
+        } else if (chessModel.isMoveCorrect() && !chessModel.isPuzzleCompleted()) {
+            chessModel.increasePuzzleIndex()
+            chessModel.setPuzzlePosition()
+            chessModel.increasePuzzleIndex()
+            chessView.invalidate()
+        } else {
+            chessHeader.text = "That was not the right solution."
+            chessModel.setPuzzleInactive()
+            chessModel.stopGame()
+            learnNavBar.isVisible = true
+            reviewNavBar.isVisible = false
+            chessView.invalidate()
+        }
+
+
+    }
+
+    override fun hasPuzzleMoveMade(): Boolean {
+        return chessModel.hasPuzzleMoveMade()
     }
 
 
