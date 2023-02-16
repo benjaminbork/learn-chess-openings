@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val readDb = db.readableDatabase
         val cursor = readDb.query(
             user.User.TABLE_NAME,

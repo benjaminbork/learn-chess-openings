@@ -1,5 +1,6 @@
 package com.example.learnchessopenings
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import java.lang.Integer.min
 
@@ -23,6 +25,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private var movingPieceY : Float = -1f
     private var movingPieceBitMap : Bitmap? = null
     private  var movingPiece : ChessPiece? = null
+    private var moves = mutableListOf<ChessMove>()
+
 
     private val svgResIDs = setOf(
         R.drawable.bq,
@@ -42,6 +46,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     var chessDelegate : ChessDelegate? = null
 
+
     init {
 
     }
@@ -58,7 +63,11 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         cellSide = chessBoardSide / 8f
         originX = (width - chessBoardSide) / 2
         originY = (height - chessBoardSide) / 6
-        drawChessBoard(canvas)
+        if (movingPiece == null) {
+            drawChessBoard(canvas)
+        } else {
+            drawChessBoardWithHeatMap(canvas)
+        }
         drawPieces(canvas)
     }
 
@@ -67,9 +76,10 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         when (event.action) {
 
             MotionEvent.ACTION_DOWN -> {
+                chessDelegate?.getValidMovesForView()?.let { moves.addAll(it) }
                 fromCol = ((event.x - originX) / cellSide).toInt()
                 fromRow = 7 - ((event.y - originY) / cellSide).toInt()
-                chessDelegate?.pieceAt(fromCol,fromRow)?.let {
+                chessDelegate?.pieceAt(ChessSquare(fromCol,fromRow))?.let {
                     movingPiece = it
                     movingPieceBitMap = bitmaps[it.resID]
                 }
@@ -80,14 +90,24 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 movingPieceX = event.x
                 movingPieceY = event.y
                 invalidate()
+
             }
             MotionEvent.ACTION_UP -> {
                 val col = ((event.x - originX) / cellSide).toInt()
                 val row = 7 - ((event.y - originY) / cellSide).toInt()
-                Log.d(TAG,"from(${fromCol}, ${fromRow}) to (${col}, ${row})")
-                chessDelegate?.movePiece(fromCol,fromRow,col,row)
+                chessDelegate?.movePiece(ChessSquare(fromCol,fromRow), ChessSquare(col,row))
                 movingPieceBitMap = null
                 movingPiece = null
+                moves.removeAll(moves)
+
+                // for puzzles
+                if (chessDelegate?.isPuzzleActive() == true
+                    && chessDelegate?.hasPuzzleMoveMade() == true) {
+                    chessDelegate?.checkIsMoveCorrect()
+                }
+
+
+
             }
         }
         return true
@@ -101,7 +121,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private fun drawPieces(canvas: Canvas) {
         for (row in 0..7) {
             for (col in 7 downTo 0) {
-                chessDelegate?.pieceAt(col,row)?.let {
+                chessDelegate?.pieceAt(ChessSquare(col,row))?.let {
                     if (it != movingPiece) {
                         drawPieceAt(canvas,col,row, it.resID)
                     }
@@ -127,9 +147,39 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         }
     }
 
+    private fun drawChessBoardWithHeatMap(canvas: Canvas) {
+        var isPossibleMove = false
+        for (row in 0..7 ) {
+            for (col in 0..7) {
+                movingPiece?.let {
+                    if (moves != null) {
+                        for (move in moves) {
+                            if (ChessSquare(it.col, it.row) == move.from
+                                && it.chessPieceName == move.chessPiece.chessPieceName
+                                && move.to == ChessSquare(col,row)) {
+                                isPossibleMove =  true
+                            }
+                        }
+                    }
+                }
+                drawSquareAtWithHeatMap(canvas,col,row,((row + col) % 2 == 0), isPossibleMove)
+                isPossibleMove = false
+            }
+
+
+        }
+    }
+
+
     private fun drawSquareAt(canvas: Canvas, col: Int,row: Int,isDark: Boolean) {
         paint.color = if (isDark) Color.WHITE else resources.getColor(R.color.primary_green)
         canvas.drawRect(originX +  col * cellSide,originY + row * cellSide, originX + (col + 1) * cellSide, originY + (row + 1) * cellSide, paint)
+    }
+
+    private fun drawSquareAtWithHeatMap(canvas: Canvas, col: Int, row: Int, isDark: Boolean, isPossibleMove: Boolean?
+    ) {
+        paint.color = if (isPossibleMove == true && isDark)  ColorUtils.blendARGB(Color.RED, Color.WHITE,0.3f)else if (isPossibleMove == true) ColorUtils.blendARGB(Color.RED, Color.WHITE,0.4f)  else if (isDark) resources.getColor(R.color.primary_green)  else Color.WHITE
+        canvas.drawRect(RectF(originX + col * cellSide, originY + (7 - row) * cellSide ,originX + (col + 1) * cellSide,originY + (7 - row + 1) * cellSide),paint)
     }
 
 }
