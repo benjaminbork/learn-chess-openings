@@ -50,7 +50,7 @@ object variation {
 
     private fun getDate(date: String?): LocalDate {
         return if(date != null) {
-            LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+            LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         } else {
             LocalDate.parse("01-01-1970", DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
