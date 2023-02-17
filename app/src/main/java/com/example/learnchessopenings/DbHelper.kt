@@ -16,6 +16,13 @@ class DbHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
         db.execSQL(user.SQL_CREATE_ENTRIES)
     }
 
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onOpen(db)
+        db!!.execSQL(course.SQL_CREATE_ENTRIES)
+        db.execSQL(variation.SQL_CREATE_ENTRIES)
+        db.execSQL(user.SQL_CREATE_ENTRIES)
+    }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL(course.SQL_DELETE_ENTRIES)
         db.execSQL(variation.SQL_DELETE_ENTRIES)
