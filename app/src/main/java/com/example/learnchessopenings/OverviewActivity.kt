@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import com.example.learnchessopenings.Models.variation
 import com.example.learnchessopenings.databinding.OverviewBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.time.LocalDate
 
 class OverviewActivity : AppCompatActivity() {
     private lateinit var binding : OverviewBinding
