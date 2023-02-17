@@ -34,6 +34,12 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var returnAppBar : Toolbar
     private lateinit var loadingDialog : View
 
+    private var courseId = 0
+    private lateinit var chessCourse : Map<String, Any>
+    private lateinit var chessVariations : MutableList<Int>
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +53,29 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
         chessAlert = findViewById(R.id.chessAlert)
         learnNavBarItems = findViewById(R.id.learnNavigationView)
         learnNavBar = findViewById(R.id.learnNavBar)
+        reviewNavBar = findViewById(R.id.reviewNavBar)
+        reviewNavBarItems = findViewById(R.id.reviewNavigationView)
         returnAppBar = findViewById(R.id.return_app_bar)
         loadingDialog = findViewById(R.id.loadingDialogInclude)
 
         db = DbHelper(this)
 
-        chessModel.stopGame()
+        courseId = intent.getIntExtra("courseId", 0)
 
-        val courseId = intent.getIntExtra("courseId", 0)
+        chessCourse = course.getCourse(courseId, db)
+        Log.d(TAG, "onCreate: $chessCourse")
+
+
+
 
         loadingDialog.isVisible = false
         chessView.isVisible = true
         chessHeader.isVisible = true
-        learnNavBar.isVisible = true
+        reviewNavBar.isVisible = true
+
+        returnAppBar.title = chessCourse["title"].toString()
+
+
 
         learnNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
@@ -111,63 +127,34 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.isPuzzleActive()
     }
 
-    // learn functions
-    /*
+
+    // review functions
      private fun showNextPosition() {
-         increaseIndex()
-         if (!chessSubHeader.isVisible) {
-             chessSubHeader.isVisible = true
-         }
-
-         if (variationIndex != -1 && variationIndex <= variationLength - 1) {
-             chessModel.loadFEN(fens[variationIndex] as String)
-             chessSubHeader.text = comments[variationIndex] as String
-             chessView.invalidate()
-         }
-
-         if (variationIndex != -1 && variationIndex == variationLength -1) {
-             setVariationLearned()
-         }
-
+         //TODO
      }
 
 
      private fun showPreviousPosition() {
-         decreaseIndex()
-
-         if (variationIndex != -1) {
-             chessModel.loadFEN(fens[variationIndex] as String)
-             chessSubHeader.text = comments[variationIndex] as String
-             chessView.invalidate()
-         }
-
+         //TODO
      }
 
      private fun increaseIndex () {
-         val tempVariationIndex = variationIndex + 1
-         if (variationIndex <= variationLength - 1) variationIndex = tempVariationIndex
+         // TODO
      }
 
      private fun decreaseIndex () {
-         val tempVariationIndex = variationIndex - 1
-         if (variationIndex > 0) variationIndex = tempVariationIndex
+        // TODO
      }
 
-     private fun setVariationLearned() {
-         variation.setLearned(db,variationId)
-         chessAlert.isVisible = true
-         chessAlert.text = "You learned this variation."
-     }
-
-     private fun checkIsVariationLearned (){
+     private fun checkIsVariationLearned (chessVariation : Map<String, Any>) {
          if (chessVariation["learned"] == 1) {
-             chessAlert.isVisible = true
-             chessAlert.text = "You learned this variation."
+             //TODO
          }
 
      }
 
-      */
+
+
 
     // puzzle function ( needed for chessView)
     override fun checkIsMoveCorrect() {
