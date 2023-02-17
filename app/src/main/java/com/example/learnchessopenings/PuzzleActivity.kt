@@ -1,6 +1,7 @@
 package com.example.learnchessopenings
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import org.w3c.dom.Text
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -21,6 +23,7 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var chessView : ChessView
     private lateinit var chessHeader : TextView
     private lateinit var chessSubHeader : TextView
+    private lateinit var chessAlert : TextView
     private lateinit var learnNavBarItems : BottomNavigationView
     private lateinit var learnNavBar : View
     private lateinit var reviewNavBarItems : BottomNavigationView
@@ -38,6 +41,7 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
 
         chessHeader = findViewById(R.id.chessHeader)
         chessSubHeader = findViewById(R.id.chessSubHeader)
+        chessAlert = findViewById(R.id.chessAlert)
         learnNavBarItems = findViewById(R.id.learnNavigationView)
         learnNavBar = findViewById(R.id.learnNavBar)
         reviewNavBarItems = findViewById(R.id.reviewNavigationView)
@@ -160,7 +164,8 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
 
     override fun checkIsMoveCorrect() {
         if (chessModel.isMoveCorrect() && chessModel.isPuzzleCompleted()) {
-        chessHeader.text = "You got the puzzle right"
+            chessAlert.text = "That was the right solution."
+            chessAlert.isVisible = true
             chessModel.stopGame()
             chessModel.setPuzzleInactive()
             learnNavBar.isVisible = true
@@ -173,7 +178,9 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
             chessModel.increasePuzzleIndex()
             chessView.invalidate()
         } else {
-            chessHeader.text = "That was not the right solution."
+            chessAlert.text = "That was not the right solution."
+            chessAlert.setTextColor(Color.RED)
+            chessAlert.isVisible = true
             chessModel.setPuzzleInactive()
             chessModel.stopGame()
             learnNavBar.isVisible = true

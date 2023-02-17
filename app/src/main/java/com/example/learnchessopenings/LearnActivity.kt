@@ -14,6 +14,7 @@ import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import org.w3c.dom.Text
 import retrofit2.HttpException
 import java.io.IOException
 import kotlin.properties.Delegates
@@ -25,12 +26,14 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var chessView : ChessView
     private lateinit var chessHeader : TextView
     private lateinit var chessSubHeader : TextView
+    private lateinit var chessAlert : TextView
     private lateinit var learnNavBarItems : BottomNavigationView
     private lateinit var learnNavBar : View
     private lateinit var reviewNavBarItems : BottomNavigationView
     private lateinit var reviewNavBar : View
     private lateinit var returnAppBar : Toolbar
     private lateinit var loadingDialog : View
+    private lateinit var chessVariation : Map<String, Any>
     private lateinit var fens : MutableList<*>
     private lateinit var comments : MutableList<*>
     private var variationId = 0
@@ -47,6 +50,7 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
 
         chessHeader = findViewById(R.id.chessHeader)
         chessSubHeader = findViewById(R.id.chessSubHeader)
+        chessAlert = findViewById(R.id.chessAlert)
         learnNavBarItems = findViewById(R.id.learnNavigationView)
         learnNavBar = findViewById(R.id.learnNavBar)
         returnAppBar = findViewById(R.id.return_app_bar)
@@ -60,13 +64,13 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
         variationId = intent.getIntExtra("id", 0)
         val courseTitle = intent.getStringExtra("courseTitle")
         val coursePlayer = intent.getIntExtra("coursePlayer", 0)
-        val variation = variation.getVariation(variationId,db)
-        fens = variation["fen"] as MutableList<*>
-        comments = variation["comments"] as MutableList<*>
+        chessVariation = variation.getVariation(variationId,db)
+        fens = chessVariation["fen"] as MutableList<*>
+        comments = chessVariation["comments"] as MutableList<*>
         variationLength = fens.size
 
         returnAppBar.title = "$courseTitle"
-        chessHeader.text = variation["title"].toString()
+        chessHeader.text = chessVariation["title"].toString()
         loadingDialog.isVisible = false
         chessView.isVisible = true
         chessHeader.isVisible = true
@@ -88,6 +92,9 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
         returnAppBar.setNavigationOnClickListener{
             finish()
         }
+
+        checkIsVariationLearned()
+
 
         chessView.invalidate()
 
@@ -162,37 +169,24 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
 
     private fun setVariationLearned() {
         variation.setLearned(db,variationId)
-        chessHeader.text = "learned"
+        chessAlert.isVisible = true
+        chessAlert.text = "You learned this variation."
+    }
+
+    private fun checkIsVariationLearned (){
+        if (chessVariation["learned"] == 1) {
+            chessAlert.isVisible = true
+            chessAlert.text = "You learned this variation."
+        }
+
     }
 
     // puzzle function ( needed for chessView)
     override fun checkIsMoveCorrect() {
-        if (chessModel.isMoveCorrect() && chessModel.isPuzzleCompleted()) {
-            chessHeader.text = "You got the puzzle right"
-            chessModel.stopGame()
-            chessModel.setPuzzleInactive()
-            learnNavBar.isVisible = true
-            reviewNavBar.isVisible = false
-            chessView.invalidate()
-            // TODO add xp and disable puzzle for the current day
-        } else if (chessModel.isMoveCorrect() && !chessModel.isPuzzleCompleted()) {
-            chessModel.increasePuzzleIndex()
-            chessModel.setPuzzlePosition()
-            chessModel.increasePuzzleIndex()
-            chessView.invalidate()
-        } else {
-            chessHeader.text = "That was not the right solution."
-            chessModel.setPuzzleInactive()
-            chessModel.stopGame()
-            learnNavBar.isVisible = true
-            reviewNavBar.isVisible = false
-            chessView.invalidate()
-        }
-
-
+        return
     }
     override fun hasPuzzleMoveMade(): Boolean {
-        return chessModel.hasPuzzleMoveMade()
+        return false
     }
 
 
