@@ -52,7 +52,7 @@ object variation {
         return if(date != null) {
             LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         } else {
-            LocalDate.parse("01-01-1970", DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            LocalDate.parse("1970-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
     }
 
