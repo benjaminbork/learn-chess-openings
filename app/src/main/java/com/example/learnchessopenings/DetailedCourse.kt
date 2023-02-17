@@ -68,7 +68,9 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         reviewBtn.text = "Review All (${progress})"
         reviewBtn.setOnClickListener {
             // Review all button code
+            if (progress != 0) {
 
+            }
         }
 
         populateRecycler(findViewById(R.id.recyclerView), variations)
