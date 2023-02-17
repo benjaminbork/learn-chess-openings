@@ -68,9 +68,10 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         reviewBtn.text = "Review All (${progress})"
         reviewBtn.setOnClickListener {
             // Review all button code
-            if (progress != 0) {
-
-            }
+            val intent = Intent(applicationContext, ReviewActivity::class.java)
+            intent.putExtra("courseId", courseId)
+            startActivity(intent)
+            finish()
         }
 
         populateRecycler(findViewById(R.id.recyclerView), variations)
