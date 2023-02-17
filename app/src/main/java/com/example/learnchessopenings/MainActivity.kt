@@ -11,6 +11,7 @@ import com.example.learnchessopenings.Models.dailyPuzzle
 import com.example.learnchessopenings.Models.user
 import com.example.learnchessopenings.Models.variation
 import com.google.android.material.textfield.TextInputLayout
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val db = DbHelper(this)
@@ -39,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             cursor.close()
+            user.checkWeek(db)
+            user.checkStreak(db)
             val overview = Intent (applicationContext, OverviewActivity::class.java)
             overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(overview)
@@ -68,7 +71,6 @@ class MainActivity : AppCompatActivity() {
             storeDailyPuzzle()
         }
         cursor.close()
-        readDb.close()
     }
 
     private fun storeDailyPuzzle() {
@@ -83,7 +85,6 @@ class MainActivity : AppCompatActivity() {
             null,
             value
         )
-        writeDb.close()
     }
 
     fun createUser(view: View) {
@@ -95,6 +96,8 @@ class MainActivity : AppCompatActivity() {
                 put(user.User.COLUMN_NAME_NAME, name.toString())
                 put(user.User.COLUMN_NAME_STREAK, 0)
                 put(user.User.COLUMN_NAME_XP, 0)
+                put(user.User.COLUMN_NAME_LAST_DAY_STREAK, "1970-01-01")
+                put(user.User.COLUMN_NAME_WEEK, Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.WEEK_OF_YEAR))
             }
             val newRowId = writeDb.insert(user.User.TABLE_NAME, null, values)
 

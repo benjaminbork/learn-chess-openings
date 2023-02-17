@@ -1,7 +1,5 @@
 package com.example.learnchessopenings
 
-import android.annotation.SuppressLint
-import android.database.Cursor
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -138,13 +136,13 @@ class Profile : Fragment() {
             "streak_day" to cursor.getString(3),
             "experience" to cursor.getInt(4),
             "exp_by_day" to arrayOf<Int?>(
-                cursor.getInt(5),
                 cursor.getInt(6),
                 cursor.getInt(7),
                 cursor.getInt(8),
                 cursor.getInt(9),
                 cursor.getInt(10),
                 cursor.getInt(11),
+                cursor.getInt(12)
             )
         )
         cursor.close()
