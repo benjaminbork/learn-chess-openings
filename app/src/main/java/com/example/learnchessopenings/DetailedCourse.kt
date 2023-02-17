@@ -1,10 +1,8 @@
 package com.example.learnchessopenings
 
 import android.content.Intent
-import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.provider.BaseColumns
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -21,6 +19,7 @@ import com.example.learnchessopenings.ViewModels.detailedCourseViewModel
 class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickListener {
     private var db: DbHelper = DbHelper(this)
     private lateinit var courseTitle : String
+    private var courseId = 0
     private var coursePlayer = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,8 +28,8 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
 
         db = DbHelper(this)
 
-        val data = intent.getIntExtra("id", 0)
-        populatePage(data)
+        courseId = intent.getIntExtra("id", 0)
+        populatePage(courseId)
     }
 
     private fun populatePage(courseId: Int) {
@@ -94,8 +93,10 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         intent.putExtra("id", id)
         intent.putExtra("courseTitle", courseTitle)
         intent.putExtra("coursePlayer", coursePlayer)
+        intent.putExtra("courseId", courseId)
         course.setActive(db, id)
         startActivity(intent)
+        finish()
     }
 
     private fun getData(courseId: Int): Map<String, Any> {

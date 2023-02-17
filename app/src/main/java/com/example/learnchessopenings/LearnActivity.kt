@@ -36,6 +36,7 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var chessVariation : Map<String, Any>
     private lateinit var fens : MutableList<*>
     private lateinit var comments : MutableList<*>
+    private var courseId = 0
     private var variationId = 0
     private var variationLength = -1
     private var variationIndex = -1
@@ -62,7 +63,9 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
 
 
         variationId = intent.getIntExtra("id", 0)
+        courseId = intent.getIntExtra("courseId", 0)
         val courseTitle = intent.getStringExtra("courseTitle")
+
         val coursePlayer = intent.getIntExtra("coursePlayer", 0)
         chessVariation = variation.getVariation(variationId,db)
         fens = chessVariation["fen"] as MutableList<*>
@@ -90,6 +93,9 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
 
 
         returnAppBar.setNavigationOnClickListener{
+            val intent = Intent(applicationContext, DetailedCourse::class.java)
+            intent.putExtra("id", courseId)
+            startActivity(intent)
             finish()
         }
 
