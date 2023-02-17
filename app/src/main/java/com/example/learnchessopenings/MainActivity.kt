@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.example.learnchessopenings.Models.course
+import com.example.learnchessopenings.Models.dailyPuzzle
 import com.example.learnchessopenings.Models.user
 import com.example.learnchessopenings.Models.variation
 import com.google.android.material.textfield.TextInputLayout
@@ -26,11 +27,13 @@ class MainActivity : AppCompatActivity() {
             null,
             null
         )
+        val cursorCount = cursor.count
 
         checkStoredCourses()
+        checkDailyPuzzle()
 
         // Checks if a user already exists and reroutes to the homepage if it's true
-        if(cursor.count < 1) {
+        if(cursorCount < 1) {
             cursor.close()
             setContentView(R.layout.login_screen)
         }
@@ -46,6 +49,41 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         db.close()
         super.onDestroy()
+    }
+
+    private fun checkDailyPuzzle() {
+        val readDb = db.readableDatabase
+
+        val cursor = readDb.query(
+            dailyPuzzle.DailyPuzzle.TABLE_NAME,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        if(cursor.count < 1) {
+            // Daily puzzle doesn't exist
+            storeDailyPuzzle()
+        }
+        cursor.close()
+        readDb.close()
+    }
+
+    private fun storeDailyPuzzle() {
+        val writeDb = db.writableDatabase
+
+        val value = ContentValues().apply {
+            put(dailyPuzzle.DailyPuzzle.COLUMN_NAME_LAST_PLAYED, "1970-01-01")
+        }
+
+        writeDb.insert(
+            dailyPuzzle.DailyPuzzle.TABLE_NAME,
+            null,
+            value
+        )
+        writeDb.close()
     }
 
     fun createUser(view: View) {
