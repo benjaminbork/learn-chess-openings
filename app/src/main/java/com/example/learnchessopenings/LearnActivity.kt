@@ -2,6 +2,7 @@ package com.example.learnchessopenings
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -9,13 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.example.learnchessopenings.Models.course
+import com.example.learnchessopenings.Models.variation
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.HttpException
 import java.io.IOException
+import kotlin.properties.Delegates
 
 
-class ReviewAllActivity : AppCompatActivity(), ChessDelegate{
+class LearnActivity : AppCompatActivity(), ChessDelegate{
+    private var db: DbHelper = DbHelper(this)
     var chessModel = ChessModel()
     private lateinit var chessView : ChessView
     private lateinit var chessHeader : TextView
@@ -26,6 +31,11 @@ class ReviewAllActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var reviewNavBar : View
     private lateinit var returnAppBar : Toolbar
     private lateinit var loadingDialog : View
+    private lateinit var fens : MutableList<*>
+    private lateinit var comments : MutableList<*>
+    private var variationId = 0
+    private var variationLength = -1
+    private var variationIndex = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,83 +49,46 @@ class ReviewAllActivity : AppCompatActivity(), ChessDelegate{
         chessSubHeader = findViewById(R.id.chessSubHeader)
         learnNavBarItems = findViewById(R.id.learnNavigationView)
         learnNavBar = findViewById(R.id.learnNavBar)
-        reviewNavBarItems = findViewById(R.id.reviewNavigationView)
-        reviewNavBar = findViewById(R.id.reviewNavBar)
         returnAppBar = findViewById(R.id.return_app_bar)
         loadingDialog = findViewById(R.id.loadingDialogInclude)
 
-        returnAppBar.title = "Daily Puzzle"
+        db = DbHelper(this)
+
+        chessModel.stopGame()
 
 
+        variationId = intent.getIntExtra("id", 0)
+        val courseTitle = intent.getStringExtra("courseTitle")
+        val coursePlayer = intent.getIntExtra("coursePlayer", 0)
+        val variation = variation.getVariation(variationId,db)
+        fens = variation["fen"] as MutableList<*>
+        comments = variation["comments"] as MutableList<*>
+        variationLength = fens.size
+
+        returnAppBar.title = "$courseTitle"
+        chessHeader.text = variation["title"].toString()
+        loadingDialog.isVisible = false
+        chessView.isVisible = true
+        chessHeader.isVisible = true
+        learnNavBar.isVisible = true
 
         learnNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.previous -> {
-                    showPreviousPuzzlePosition()
+                   showPreviousPosition()
                 }
                 R.id.next -> {
-                    showNextPuzzlePosition()
-
+                    showNextPosition()
                 }
             }
             true
         }
 
-        reviewNavBarItems.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.solution -> {
-                    Log.d(TAG, "solution touched")
-                    reviewNavBar.isVisible = false
-                    learnNavBar.isVisible = true
-                    chessModel.setPuzzleInactive()
-                    chessModel.stopGame()
-                    chessView.invalidate()
-                }
-            }
-            true
-        }
 
         returnAppBar.setNavigationOnClickListener{
-            val overview = Intent (applicationContext, OverviewActivity::class.java)
-            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(overview)
             finish()
         }
 
-        // load puzzle
-        lifecycleScope.launchWhenCreated {
-            val response = try {
-                RetrofitInstance.api.getData()
-            } catch (e: IOException) {
-                Log.e(TAG, "Check your internet connection", )
-                return@launchWhenCreated
-            } catch (e: HttpException) {
-                Log.e(TAG, "Unexpected Response", )
-                return@launchWhenCreated
-            }
-            if (response.isSuccessful && response.body() != null) {
-                Log.d(TAG, "Request successful")
-                Log.d(TAG, "onCreate: ${response.body()}")
-                chessModel.setPuzzleData(response)
-                chessModel.loadPuzzleStartingPosition()
-                chessModel.loadPuzzlePositions()
-                chessModel.setPuzzleActive()
-                chessModel.increasePuzzleIndex()
-                var i = 0
-                while (i < 10 && !chessModel.checkPuzzleLoaded()) {
-                     i += 1
-                 }
-                if (chessModel.checkPuzzleLoaded()) {
-                    reviewNavBar.isVisible = true
-                    chessView.isVisible = true
-                    chessHeader.text = chessModel.getPuzzlePlayerToMove()
-                    chessHeader.isVisible = true
-                }
-                loadingDialog.isVisible = false
-            } else {
-                Log.d(TAG, "Request failed.")
-            }
-        }
         chessView.invalidate()
 
     }
@@ -146,23 +119,56 @@ class ReviewAllActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.isPuzzleActive()
     }
 
-    // puzzle functions
+    // learn functions
 
-    private fun showNextPuzzlePosition() {
-        chessModel.increasePuzzleIndex()
-        chessModel.setPuzzlePosition()
-        chessView.invalidate()
+    private fun showNextPosition() {
+        increaseIndex()
+        if (!chessSubHeader.isVisible) {
+            chessSubHeader.isVisible = true
+        }
+
+        if (variationIndex != -1 && variationIndex <= variationLength - 1) {
+            chessModel.loadFEN(fens[variationIndex] as String)
+            chessSubHeader.text = comments[variationIndex] as String
+            chessView.invalidate()
+        }
+
+        if (variationIndex != -1 && variationIndex == variationLength -1) {
+            setVariationLearned()
+        }
+
     }
 
-    private fun showPreviousPuzzlePosition() {
-        chessModel.decreasePuzzleIndex()
-        chessModel.setPuzzlePosition()
-        chessView.invalidate()
+    private fun showPreviousPosition() {
+        decreaseIndex()
+
+        if (variationIndex != -1) {
+            chessModel.loadFEN(fens[variationIndex] as String)
+            chessSubHeader.text = comments[variationIndex] as String
+            chessView.invalidate()
+        }
+
     }
 
+    private fun increaseIndex () {
+        val tempVariationIndex = variationIndex + 1
+        if (variationIndex <= variationLength - 1) variationIndex = tempVariationIndex
+    }
+
+    private fun decreaseIndex () {
+        val tempVariationIndex = variationIndex - 1
+        if (variationIndex > 0) variationIndex = tempVariationIndex
+    }
+
+    private fun setVariationLearned() {
+        variation.setLearned(db,variationId)
+        chessHeader.text = "learned"
+    }
+
+    // puzzle function ( needed for chessView)
     override fun checkIsMoveCorrect() {
         if (chessModel.isMoveCorrect() && chessModel.isPuzzleCompleted()) {
-        chessHeader.text = "You got the puzzle right"
+            chessHeader.text = "You got the puzzle right"
             chessModel.stopGame()
             chessModel.setPuzzleInactive()
             learnNavBar.isVisible = true
@@ -185,7 +191,6 @@ class ReviewAllActivity : AppCompatActivity(), ChessDelegate{
 
 
     }
-
     override fun hasPuzzleMoveMade(): Boolean {
         return chessModel.hasPuzzleMoveMade()
     }

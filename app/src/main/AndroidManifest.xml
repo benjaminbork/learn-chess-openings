@@ -55,7 +55,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ReviewAllActivity"
+            android:name=".LearnActivity"
             android:screenOrientation="portrait"
             android:exported="true"
             tools:ignore="LockedOrientationActivity">

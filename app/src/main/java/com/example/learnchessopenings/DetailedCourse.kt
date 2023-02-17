@@ -1,8 +1,10 @@
 package com.example.learnchessopenings
 
 import android.content.Intent
+import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.provider.BaseColumns
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -18,6 +20,8 @@ import com.example.learnchessopenings.ViewModels.detailedCourseViewModel
 
 class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickListener {
     private var db: DbHelper = DbHelper(this)
+    private lateinit var courseTitle : String
+    private var coursePlayer = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,21 +30,21 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         db = DbHelper(this)
 
         val data = intent.getIntExtra("id", 0)
-
         populatePage(data)
     }
 
     private fun populatePage(courseId: Int) {
         val data = getData(courseId)
+        courseTitle = data[course.Course.COLUMN_NAME_TITLE].toString()
+        coursePlayer = data[course.Course.COLUMN_NAME_BLACK] as Int
 
         val returnAppBar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.returnAppBar)
-        returnAppBar.title = data[course.Course.COLUMN_NAME_TITLE].toString()
+
+        returnAppBar.title = courseTitle
         returnAppBar.setNavigationOnClickListener {
-            val overview = Intent (applicationContext, OverviewActivity::class.java)
-            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(overview)
             finish()
         }
+
 
         var progress = 0
         val variations = data[course.Course.COLUMN_NAME_VARIATIONS] as ArrayList<Map<String, *>>
@@ -86,7 +90,12 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
     }
 
     override fun onItemClick(id: Int) {
-        TODO("Not yet implemented")
+        val intent = Intent(applicationContext, LearnActivity::class.java)
+        intent.putExtra("id", id)
+        intent.putExtra("courseTitle", courseTitle)
+        intent.putExtra("coursePlayer", coursePlayer)
+        course.setActive(db, id)
+        startActivity(intent)
     }
 
     private fun getData(courseId: Int): Map<String, Any> {

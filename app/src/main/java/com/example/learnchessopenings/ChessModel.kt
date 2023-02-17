@@ -746,7 +746,7 @@ class ChessModel {
          }
          return fen
     }
-    private fun loadFEN (fen: String) {
+    fun loadFEN (fen: String) {
         piecesBox.removeAll(piecesBox)
         var fenString = fen
         fenString = fenString.replace("8","........")
@@ -1083,7 +1083,7 @@ class ChessModel {
 
     fun decreasePuzzleIndex () {
         val tempPuzzleIndex = puzzlePositionIndex - 1
-        if (tempPuzzleIndex >= 0) puzzlePositionIndex = tempPuzzleIndex
+        if (tempPuzzleIndex > 0) puzzlePositionIndex = tempPuzzleIndex
     }
     
     
