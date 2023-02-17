@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnchessopenings.Adapters.courseAdapter
 import com.example.learnchessopenings.Models.course
-import com.example.learnchessopenings.Models.variation
 import com.example.learnchessopenings.ViewModels.courseViewModel
-import com.example.learnchessopenings.ViewModels.dashboardViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -79,6 +77,7 @@ class Courses : Fragment(), courseAdapter.OnItemClickListener {
     override fun onItemClick(id: Int) {
         val intent = Intent(context, DetailedCourse::class.java)
         intent.putExtra("id", id)
+        course.setActive(db, id)
         startActivity(intent)
     }
 

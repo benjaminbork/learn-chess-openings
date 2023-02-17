@@ -1,6 +1,8 @@
 package com.example.learnchessopenings.Models
 
+import android.content.ContentValues
 import android.provider.BaseColumns
+import com.example.learnchessopenings.DbHelper
 
 object course {
     object Course : BaseColumns {
@@ -28,4 +30,19 @@ object course {
     const val SQL_DELETE_ENTRIES = """
         DROP TABLE IF EXISTS ${Course.TABLE_NAME}
     """
+
+    fun setActive(db: DbHelper, id: Int): Int {
+        val writeDb = db.writableDatabase
+
+        val value = ContentValues().apply {
+            put(Course.COLUMN_NAME_ACTIVE, 1)
+        }
+
+        return writeDb.update(
+            course.Course.TABLE_NAME,
+            value,
+            "${BaseColumns._ID} = $id",
+            null
+        )
+    }
 }
