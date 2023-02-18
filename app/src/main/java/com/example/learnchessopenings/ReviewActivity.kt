@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import com.example.learnchessopenings.Models.course
+import com.example.learnchessopenings.Models.user
 import com.example.learnchessopenings.Models.variation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
@@ -270,7 +271,8 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
 
         if (chessModel.isReviewMoveCorrect() && chessModel.isReviewCompleted()) {
             increaseReviewIndex()
-            chessAlert.text = "XP +300"
+            chessAlert.text = "+10 XP"
+            user.addExp(10, db)
             chessAlert.isVisible = true
             chessModel.stopGame()
             chessModel.setReviewInactive()

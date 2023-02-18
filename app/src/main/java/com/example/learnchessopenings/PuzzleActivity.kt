@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.learnchessopenings.Models.dailyPuzzle
+import com.example.learnchessopenings.Models.user
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.w3c.dom.Text
@@ -183,16 +184,16 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
 
     override fun checkIsMoveCorrect() {
         if (chessModel.isMoveCorrect() && chessModel.isPuzzleCompleted()) {
-            chessAlert.text = "That was the right solution."
             chessAlert.isVisible = true
             chessModel.stopGame()
             chessModel.setPuzzleInactive()
             learnNavBar.isVisible = true
             reviewNavBar.isVisible = false
             chessView.invalidate()
-            // TODO add xp and disable puzzle for the current day
             if (!hasPuzzleBeenPlayedToday()) {
                 dailyPuzzle.setDate(db, LocalDate.now())
+                chessAlert.text = "+10 XP"
+                user.addExp(10, db)
             }
         } else if (chessModel.isMoveCorrect() && !chessModel.isPuzzleCompleted()) {
             chessModel.increasePuzzleIndex()
@@ -206,7 +207,6 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
             chessModel.stopGame()
             learnNavBar.isVisible = true
             reviewNavBar.isVisible = false
-            // TODO add xp and disable puzzle for the current day
             if (!hasPuzzleBeenPlayedToday()) {
                 dailyPuzzle.setDate(db, LocalDate.now())
             }
