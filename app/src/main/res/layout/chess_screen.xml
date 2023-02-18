@@ -46,6 +46,21 @@
             tools:visibility="invisible" />
 
         <TextView
+            android:id="@+id/chessAlert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textColor="@color/primary_green"
+            android:textSize="24sp"
+            android:textStyle="italic"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
             android:id="@+id/chessHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,7 +69,10 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:visibility="invisible"
-            tools:visibility="invisible" />
+            tools:visibility="visible"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="10dp"/>
 
         <TextView
             android:id="@+id/chessSubHeader"
@@ -64,7 +82,10 @@
             android:textAlignment="center"
             android:textSize="24sp"
             android:visibility="invisible"
-            tools:visibility="invisible" />
+            tools:visibility="visible"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="10dp"/>
     </LinearLayout>
 
 
@@ -77,7 +98,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="invisible" />
 
     <include
         android:id="@+id/learnNavBar"
@@ -88,5 +109,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        android:id="@+id/learnReviewNavBar"
+        layout="@layout/review_learn_navigation_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

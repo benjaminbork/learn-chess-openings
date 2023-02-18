@@ -33,6 +33,20 @@ object variation {
         DROP TABLE IF EXISTS ${Variation.TABLE_NAME}
     """
 
+    fun setLearned(db: DbHelper, id: Int): Int {
+        val writeDb = db.writableDatabase
+
+        val value = ContentValues().apply {
+            put(Variation.COLUMN_NAME_LEARNED, 1)
+        }
+
+        return writeDb.update(
+            variation.Variation.TABLE_NAME,
+            value,
+            "${BaseColumns._ID} = $id",
+            null
+        )
+    }
     fun setDate(id: Int, db: DbHelper, date: LocalDate): Int {
         val writeDb = db.writableDatabase
 
@@ -48,7 +62,7 @@ object variation {
         )
     }
 
-    private fun getDate(date: String?): LocalDate {
+    fun getDate(date: String?): LocalDate {
         return if(date != null) {
             LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         } else {

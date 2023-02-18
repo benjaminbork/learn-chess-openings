@@ -1,26 +1,31 @@
 package com.example.learnchessopenings
 
-import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.example.learnchessopenings.Models.dailyPuzzle
+import com.example.learnchessopenings.Models.user
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import org.w3c.dom.Text
 import retrofit2.HttpException
 import java.io.IOException
+import java.time.LocalDate
 
 
 const val TAG = "ChessActivity"
 class PuzzleActivity : AppCompatActivity(), ChessDelegate{
+    private var db: DbHelper = DbHelper(this)
     var chessModel = ChessModel()
     private lateinit var chessView : ChessView
     private lateinit var chessHeader : TextView
     private lateinit var chessSubHeader : TextView
+    private lateinit var chessAlert : TextView
     private lateinit var learnNavBarItems : BottomNavigationView
     private lateinit var learnNavBar : View
     private lateinit var reviewNavBarItems : BottomNavigationView
@@ -36,8 +41,11 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
         chessView = findViewById(R.id.chessView)
         chessView.chessDelegate = this
 
+        db = DbHelper(this)
+
         chessHeader = findViewById(R.id.chessHeader)
         chessSubHeader = findViewById(R.id.chessSubHeader)
+        chessAlert = findViewById(R.id.chessAlert)
         learnNavBarItems = findViewById(R.id.learnNavigationView)
         learnNavBar = findViewById(R.id.learnNavBar)
         reviewNavBarItems = findViewById(R.id.reviewNavigationView)
@@ -65,38 +73,38 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
         reviewNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.solution -> {
-                    Log.d(TAG, "solution touched")
                     reviewNavBar.isVisible = false
                     learnNavBar.isVisible = true
                     chessModel.setPuzzleInactive()
                     chessModel.stopGame()
                     chessView.invalidate()
+                    // TODO add xp
+                    if (!hasPuzzleBeenPlayedToday()) {
+                        dailyPuzzle.setDate(db, LocalDate.now())
+                    }
                 }
             }
             true
         }
-
         returnAppBar.setNavigationOnClickListener{
-            val overview = Intent (applicationContext, OverviewActivity::class.java)
-            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(overview)
             finish()
         }
 
         // load puzzle
         lifecycleScope.launchWhenCreated {
+
             val response = try {
                 RetrofitInstance.api.getData()
             } catch (e: IOException) {
-                Log.e(TAG, "Check your internet connection", )
+                chessModel.stopGame()
+                chessView.isVisible = true
+                chessAlert.isVisible = true
+                chessAlert.text = "Something went wrong. \nCheck your internet connection..."
                 return@launchWhenCreated
             } catch (e: HttpException) {
-                Log.e(TAG, "Unexpected Response", )
                 return@launchWhenCreated
             }
             if (response.isSuccessful && response.body() != null) {
-                Log.d(TAG, "Request successful")
-                Log.d(TAG, "onCreate: ${response.body()}")
                 chessModel.setPuzzleData(response)
                 chessModel.loadPuzzleStartingPosition()
                 chessModel.loadPuzzlePositions()
@@ -112,9 +120,22 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
                     chessHeader.text = chessModel.getPuzzlePlayerToMove()
                     chessHeader.isVisible = true
                 }
+
+                if (hasPuzzleBeenPlayedToday()) {
+                    chessAlert.text = "You already played this puzzle."
+                    reviewNavBar.isVisible = false
+                    learnNavBar.isVisible = true
+                    chessAlert.isVisible = true
+                    chessHeader.isVisible = false
+                    chessModel.stopGame()
+                }
+
                 loadingDialog.isVisible = false
             } else {
-                Log.d(TAG, "Request failed.")
+                reviewNavBar.isVisible = true
+                chessView.isVisible = true
+                chessModel.stopGame()
+                chessAlert.text = "Something went wrong..."
             }
         }
         chessView.invalidate()
@@ -163,32 +184,53 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
 
     override fun checkIsMoveCorrect() {
         if (chessModel.isMoveCorrect() && chessModel.isPuzzleCompleted()) {
-        chessHeader.text = "You got the puzzle right"
+            chessAlert.isVisible = true
             chessModel.stopGame()
             chessModel.setPuzzleInactive()
             learnNavBar.isVisible = true
             reviewNavBar.isVisible = false
             chessView.invalidate()
-            // TODO add xp and disable puzzle for the current day
+            if (!hasPuzzleBeenPlayedToday()) {
+                dailyPuzzle.setDate(db, LocalDate.now())
+                chessAlert.text = "+10 XP"
+                user.addExp(10, db)
+            }
         } else if (chessModel.isMoveCorrect() && !chessModel.isPuzzleCompleted()) {
             chessModel.increasePuzzleIndex()
             chessModel.setPuzzlePosition()
             chessModel.increasePuzzleIndex()
             chessView.invalidate()
         } else {
-            chessHeader.text = "That was not the right solution."
+            chessAlert.text = "That was not the right solution."
+            chessAlert.isVisible = true
             chessModel.setPuzzleInactive()
             chessModel.stopGame()
             learnNavBar.isVisible = true
             reviewNavBar.isVisible = false
+            if (!hasPuzzleBeenPlayedToday()) {
+                dailyPuzzle.setDate(db, LocalDate.now())
+            }
             chessView.invalidate()
         }
 
 
     }
 
+    private fun hasPuzzleBeenPlayedToday() : Boolean{
+        return (dailyPuzzle.getDailyDate(db) == LocalDate.now())
+    }
+
     override fun hasPuzzleMoveMade(): Boolean {
         return chessModel.hasPuzzleMoveMade()
+    }
+
+    // review functions for chessView needed
+    override fun isReviewActive(): Boolean {
+        return false
+    }
+
+    override fun hasReviewMoveMade(): Boolean {
+        return false
     }
 
 

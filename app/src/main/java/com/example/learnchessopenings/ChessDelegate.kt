@@ -14,4 +14,8 @@ interface ChessDelegate {
 
     fun hasPuzzleMoveMade () : Boolean
 
+    fun isReviewActive () : Boolean
+
+    fun hasReviewMoveMade(): Boolean
+
 }

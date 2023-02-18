@@ -10,8 +10,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnchessopenings.R
 import com.example.learnchessopenings.ViewModels.dashboardViewModel
+import java.time.LocalDate
 
-class dashboardAdapter(val mList: List<dashboardViewModel>) : RecyclerView.Adapter<dashboardAdapter.ViewHolder>() {
+class dashboardAdapter(val mList: List<dashboardViewModel>, private val listener: OnItemClickListener) : RecyclerView.Adapter<dashboardAdapter.ViewHolder>() {
+    interface OnItemClickListener {
+        fun onItemClick(id: Int, action: String)
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.dashboard_course_detail_card, parent, false)
@@ -22,10 +27,14 @@ class dashboardAdapter(val mList: List<dashboardViewModel>) : RecyclerView.Adapt
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val ItemsViewModel = mList[position]
 
+        var review = 0
         var progress = 0
         for(variation in ItemsViewModel.variations) {
             if(variation["learned"] == 1) {
                 progress += 1
+                if(variation["last_date"] != LocalDate.now()) {
+                    review += 1
+                }
             }
         }
 
@@ -35,26 +44,43 @@ class dashboardAdapter(val mList: List<dashboardViewModel>) : RecyclerView.Adapt
         holder.progressBar.progress = progress
         holder.progressBar.max = ItemsViewModel.variations.size
         holder.img.setImageResource(ItemsViewModel.imageId)
-
-        holder.reviewBtn.setOnClickListener {
-            // This is where review button code goes
-        }
-        holder.learnBtn.setOnClickListener {
-            // This is where learn button code goes
-        }
+        holder.reviewBtn.text = "Review (${review})"
     }
 
     override fun getItemCount(): Int {
         return mList.size
     }
 
-    class ViewHolder(ItemView: View): RecyclerView.ViewHolder(ItemView) {
-        val headerText: TextView = itemView.findViewById(R.id.courseTitle)
-        val descriptionText: TextView = itemView.findViewById(R.id.description)
-        val progressCount: TextView = itemView.findViewById(R.id.progress)
-        val progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
-        val img: ImageView = itemView.findViewById(R.id.imageView)
-        val reviewBtn : Button = itemView.findViewById(R.id.review)
-        val learnBtn : Button = itemView.findViewById(R.id.learn)
+    inner class ViewHolder(ItemView: View): RecyclerView.ViewHolder(ItemView) {
+        var headerText: TextView
+        var descriptionText: TextView
+        var progressCount: TextView
+        var progressBar: ProgressBar
+        var img: ImageView
+        var reviewBtn: Button
+        var learnBtn: Button
+
+        init {
+            headerText = itemView.findViewById(R.id.courseTitle)
+            descriptionText = itemView.findViewById(R.id.description)
+            progressCount = itemView.findViewById(R.id.progress)
+            progressBar = itemView.findViewById(R.id.progressBar)
+            img = itemView.findViewById(R.id.imageView)
+            reviewBtn = itemView.findViewById(R.id.review)
+            learnBtn = itemView.findViewById(R.id.learn)
+
+            reviewBtn.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(mList[position].id, "review")
+                }
+            }
+            learnBtn.setOnClickListener {
+                val position = adapterPosition
+                if(position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(mList[position].id, "learn")
+                }
+            }
+        }
     }
 }

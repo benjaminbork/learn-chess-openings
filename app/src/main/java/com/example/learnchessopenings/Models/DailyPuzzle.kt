@@ -46,7 +46,7 @@ object dailyPuzzle {
         }
     }
 
-    fun getDailyDate(id: Int, db: DbHelper): LocalDate {
+    fun getDailyDate(db: DbHelper): LocalDate {
         val readDb = db.readableDatabase
         var date: LocalDate = LocalDate.parse("1970-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 

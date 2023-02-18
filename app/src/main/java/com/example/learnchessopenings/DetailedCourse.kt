@@ -14,10 +14,15 @@ import com.example.learnchessopenings.Adapters.detailedCourseAdapter
 import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
 import com.example.learnchessopenings.ViewModels.detailedCourseViewModel
+import java.time.LocalDate
 
 
 class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickListener {
     private var db: DbHelper = DbHelper(this)
+    private lateinit var courseTitle : String
+    private var courseId = 0
+    private var coursePlayer = 0
+    private var variationIdsToReview = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,28 +30,33 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
 
         db = DbHelper(this)
 
-        val data = intent.getIntExtra("id", 0)
-
-        populatePage(data)
+        courseId = intent.getIntExtra("id", 0)
+        populatePage(courseId)
     }
 
     private fun populatePage(courseId: Int) {
         val data = getData(courseId)
+        courseTitle = data[course.Course.COLUMN_NAME_TITLE].toString()
+        coursePlayer = data[course.Course.COLUMN_NAME_BLACK] as Int
 
         val returnAppBar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.returnAppBar)
-        returnAppBar.title = data[course.Course.COLUMN_NAME_TITLE].toString()
+
+        returnAppBar.title = courseTitle
         returnAppBar.setNavigationOnClickListener {
-            val overview = Intent (applicationContext, OverviewActivity::class.java)
-            overview.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(overview)
             finish()
         }
 
+
         var progress = 0
+        var review = 0
         val variations = data[course.Course.COLUMN_NAME_VARIATIONS] as ArrayList<Map<String, *>>
         for(variation in variations) {
             if(variation["learned"] == 1) {
                 progress += 1
+            }
+            if(variation["learned"] == 1 && variation["last_date"] != LocalDate.now()) {
+                review += 1
+                variationIdsToReview += variation["_id"].toString() + ", "
             }
         }
         val courseProgressText = findViewById<TextView>(R.id.variationProgressCount)
@@ -62,9 +72,16 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         courseImg.setImageResource(data[course.Course.COLUMN_NAME_IMAGE_ID] as Int)
 
         val reviewBtn = findViewById<Button>(R.id.reviewButton)
-        reviewBtn.text = "Review All (${progress})"
+        reviewBtn.text = "Review All (${review})"
         reviewBtn.setOnClickListener {
             // Review all button code
+            if (review != 0) {
+                val intent = Intent(applicationContext, ReviewActivity::class.java)
+                intent.putExtra("courseId", courseId)
+                intent.putExtra("variations", variationIdsToReview)
+                startActivity(intent)
+                finish()
+            }
 
         }
 
@@ -86,7 +103,14 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
     }
 
     override fun onItemClick(id: Int) {
-        TODO("Not yet implemented")
+        val intent = Intent(applicationContext, LearnActivity::class.java)
+        intent.putExtra("id", id)
+        intent.putExtra("courseTitle", courseTitle)
+        intent.putExtra("coursePlayer", coursePlayer)
+        intent.putExtra("courseId", courseId)
+        course.setActive(db, id)
+        startActivity(intent)
+        finish()
     }
 
     private fun getData(courseId: Int): Map<String, Any> {

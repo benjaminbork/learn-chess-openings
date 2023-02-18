@@ -70,7 +70,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="8dp"
-                        android:text="by Leechess"
+                        android:text="by lichess"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dailyPuzzleDate" />

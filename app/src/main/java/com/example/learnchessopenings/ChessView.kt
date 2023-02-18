@@ -1,10 +1,8 @@
 package com.example.learnchessopenings
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -103,6 +101,12 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 // for puzzles
                 if (chessDelegate?.isPuzzleActive() == true
                     && chessDelegate?.hasPuzzleMoveMade() == true) {
+                    chessDelegate?.checkIsMoveCorrect()
+                }
+
+                // for reviews
+                if (chessDelegate?.isReviewActive() == true
+                    && chessDelegate?.hasReviewMoveMade() == true) {
                     chessDelegate?.checkIsMoveCorrect()
                 }
 
