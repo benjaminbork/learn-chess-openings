@@ -176,28 +176,29 @@ class MainActivity : AppCompatActivity() {
 
     private val coursesData: Array<Map<String, Any>> = arrayOf(
         mapOf(
-            course.Course.COLUMN_NAME_TITLE to "Example course",
+            course.Course.COLUMN_NAME_TITLE to "French",
             course.Course.COLUMN_NAME_BLACK to 1,
-            course.Course.COLUMN_NAME_DESCRIPTION to "This is a description!",
-            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable.bk,
+            course.Course.COLUMN_NAME_DESCRIPTION to "Solid opening for black",
+            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable._7099,
             course.Course.COLUMN_NAME_VARIATIONS to arrayOf(
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "First Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "Variation #01",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
                         "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
                         "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR",
                         "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR",
                         "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR",
                         "rnbqkbnr/ppp2ppp/4p3/3pP3/3P4/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR"
+                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR",
+                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR"
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN",
-                        "Comment on the third FEN",
-                        "Comment on the fourth FEN",
-                        "Comment on the fifth FEN",
-                        "Comment on the sixth FEN",
+                        "",
+                        "Preparing d5",
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Creating pawn breaktrough",
 
                     )
                 ),

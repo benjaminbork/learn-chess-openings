@@ -50,12 +50,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/primary_green"
             android:textAlignment="center"
+            android:textColor="@color/primary_green"
             android:textSize="24sp"
             android:textStyle="italic"
             android:visibility="invisible"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="10dp"/>
 
         <TextView
             android:id="@+id/chessHeader"
@@ -66,7 +69,10 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:visibility="invisible"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="10dp"/>
 
         <TextView
             android:id="@+id/chessSubHeader"
@@ -76,7 +82,10 @@
             android:textAlignment="center"
             android:textSize="24sp"
             android:visibility="invisible"
-            tools:visibility="invisible" />
+            tools:visibility="visible"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="10dp"/>
     </LinearLayout>
 
 
