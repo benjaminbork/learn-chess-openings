@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         val writeDb = db.writableDatabase
         val textInput = findViewById<View>(R.id.textInputLayout_username) as TextInputLayout
         val name = textInput.editText?.text
-        if(name != null) {
+        if(name != null && name.toString() != "") {
             val values = ContentValues().apply {
                 put(user.User.COLUMN_NAME_NAME, name.toString())
                 put(user.User.COLUMN_NAME_STREAK, 0)
@@ -107,6 +107,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(overview)
                 finish()
             }
+        }
+        else {
+            textInput.error = "Please set a name!"
         }
     }
 
