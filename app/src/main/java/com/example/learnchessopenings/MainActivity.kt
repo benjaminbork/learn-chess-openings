@@ -372,8 +372,6 @@ class MainActivity : AppCompatActivity() {
                         // Counter attacking the center
                         "rnb2rk1/pppnqpp1/4p2p/3pP3/3P1PQP/2N5/PPP3P1/R3KBNR",
                         "rnb2rk1/pp1nqpp1/4p2p/2ppP3/3P1PQP/2N5/PPP3P1/R3KBNR"
-
-
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
                         "",
@@ -399,20 +397,140 @@ class MainActivity : AppCompatActivity() {
             )
         ),
         mapOf(
-            course.Course.COLUMN_NAME_TITLE to "Other example course",
+            course.Course.COLUMN_NAME_TITLE to "Sicilian",
             course.Course.COLUMN_NAME_BLACK to 1,
-            course.Course.COLUMN_NAME_DESCRIPTION to "This is another description!",
-            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable.bb,
+            course.Course.COLUMN_NAME_DESCRIPTION to "Aggressive choice for black against 1.e4",
+            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable._7098,
             course.Course.COLUMN_NAME_VARIATIONS to arrayOf(
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "First Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "Accelerated Dragon",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
-                        "I don't know how FEN's work pls help",
-                        "Seriously, idk"
+                        // Fighting for the center
+                        "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
+                        "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR",
+                        // Preparing kingside fianchetto
+                        "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
+                        "rnbqkbnr/pp1ppp1p/6p1/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
+                        // Capturing central pawn
+                        "rnbqkbnr/pp1ppp1p/6p1/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
+                        "rnbqkbnr/pp1ppp1p/6p1/8/3pP3/5N2/PPP2PPP/RNBQKB1R",
+                        // Attacking central pawn
+                        "rnbqkbnr/pp1ppp1p/6p1/8/3NP3/8/PPP2PPP/RNBQKB1R",
+                        "rnbqkb1r/pp1ppp1p/5np1/8/3NP3/8/PPP2PPP/RNBQKB1R",
+                        // Developing the knight
+                        "rnbqkb1r/pp1ppp1p/5np1/8/3NP3/2N5/PPP2PPP/R1BQKB1R",
+                        "r1bqkb1r/pp1ppp1p/2n2np1/8/3NP3/2N5/PPP2PPP/R1BQKB1R",
+                        // Fianchetto the bishop
+                        "r1bqkb1r/pp1ppp1p/2n2np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R",
+                        "r1bqk2r/pp1pppbp/2n2np1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R",
+                        // Getting the king safe
+                        "r1bqk2r/pp1pppbp/2n2np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R",
+                        "r1bq1rk1/pp1pppbp/2n2np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R"
+
+
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN"
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Preparing kingside fianchetto",
+                        "",
+                        "Capturing central pawn",
+                        "",
+                        "Attacking central pawn",
+                        "",
+                        "Developing the knight",
+                        "",
+                        "Fianchetto the bishop",
+                        "",
+                        "Getting the king safe"
+                    )
+                ),
+                mapOf(
+                    variation.Variation.COLUMN_NAME_TITLE to "Anti-Maroczy",
+                    variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        // Fighting for the center
+                        "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
+                        "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR",
+                        // Preparing kingside fianchetto
+                        "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
+                        "rnbqkbnr/pp1ppp1p/6p1/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
+                        // Fianchetto the bishop
+                        "rnbqkbnr/pp1ppp1p/6p1/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
+                        "rnbqk1nr/pp1pppbp/6p1/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
+                        // Pressuring the center
+                        "rnbqk1nr/pp1pppbp/6p1/2p5/2PPP3/5N2/PP3PPP/RNBQKB1R",
+                        "rnb1k1nr/pp1pppbp/6p1/q1p5/2PPP3/5N2/PP3PPP/RNBQKB1R",
+                        // Opening up the light squared bishop
+                        "rnb1k1nr/pp1pppbp/6p1/q1p5/2PPP3/2N2N2/PP3PPP/R1BQKB1R",
+                        "rnb1k1nr/pp2ppbp/3p2p1/q1p5/2PPP3/2N2N2/PP3PPP/R1BQKB1R",
+                        // Ruining his pawn structure
+                        "rnb1k1nr/pp2ppbp/3p2p1/q1pP4/2P1P3/2N2N2/PP3PPP/R1BQKB1R",
+                        "rnb1k1nr/pp2pp1p/3p2p1/q1pP4/2P1P3/2b2N2/PP3PPP/R1BQKB1R",
+                        // Pinning his knight
+                        "rnb1k1nr/pp2pp1p/3p2p1/q1pP4/2P1P3/2P2N2/P4PPP/R1BQKB1R",
+                        "rn2k1nr/pp2pp1p/3p2p1/q1pP4/2P1P1b1/2P2N2/P4PPP/R1BQKB1R"
+
+                    ),
+                    variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Preparing kingside fianchetto",
+                        "",
+                        "Fianchetto the bishop",
+                        "",
+                        "Pressuring the center",
+                        "",
+                        "Opening up the light squared bishop",
+                        "",
+                        "Ruining his pawn structure",
+                        "",
+                        "Pinning his knight"
+                    )
+                ),
+                mapOf(
+                    variation.Variation.COLUMN_NAME_TITLE to "Alapin",
+                    variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        // Fighting for the center
+                        "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
+                        "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR",
+                        // Fighting for the center
+                        "rnbqkbnr/pp1ppppp/8/2p5/4P3/2P5/PP1P1PPP/RNBQKBNR",
+                        "rnbqkbnr/pp2pppp/8/2pp4/4P3/2P5/PP1P1PPP/RNBQKBNR",
+                        // Centralizing the queen
+                        "rnbqkbnr/pp2pppp/8/2pP4/8/2P5/PP1P1PPP/RNBQKBNR",
+                        "rnb1kbnr/pp2pppp/8/2pq4/8/2P5/PP1P1PPP/RNBQKBNR",
+                        // Preparing kingside fianchetto
+                        "rnb1kbnr/pp2pppp/8/2pq4/3P4/2P5/PP3PPP/RNBQKBNR",
+                        "rnb1kbnr/pp2pp1p/6p1/2pq4/3P4/2P5/PP3PPP/RNBQKBNR",
+                        // Fianchetto the bishop
+                        "rnb1kbnr/pp2pp1p/6p1/2pq4/3P4/2P2N2/PP3PPP/RNBQKB1R",
+                        "rnb1k1nr/pp2ppbp/6p1/2pq4/3P4/2P2N2/PP3PPP/RNBQKB1R ",
+                        // Saving the queen
+                        "rnb1k1nr/pp2ppbp/6p1/2pq4/2PP4/5N2/PP3PPP/RNBQKB1R",
+                        "rnb1k1nr/pp2ppbp/6p1/2p5/2PPq3/5N2/PP3PPP/RNBQKB1R",
+                        // Opening the diagonal for our bishop
+                        "rnb1k1nr/pp2ppbp/6p1/2p5/2PPq3/4BN2/PP3PPP/RN1QKB1R",
+                        "rnb1k1nr/pp2ppbp/6p1/8/2Ppq3/4BN2/PP3PPP/RN1QKB1R"
+
+                    ),
+                    variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Centralizing the queen",
+                        "",
+                        "Preparing kingside fianchetto",
+                        "",
+                        "Fianchetto the bishop",
+                        "",
+                        "Saving the queen",
+                        "",
+                        "Opening the diagonal for our bishop"
                     )
                 )
             )
