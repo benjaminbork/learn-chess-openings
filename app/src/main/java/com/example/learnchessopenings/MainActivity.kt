@@ -184,13 +184,58 @@ class MainActivity : AppCompatActivity() {
                 mapOf(
                     variation.Variation.COLUMN_NAME_TITLE to "Variation #01",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        // Preparing d5
                         "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
                         "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR",
+                        // Fighting for the center
                         "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR",
                         "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR",
+                        // Creating pawn breaktrough
                         "rnbqkbnr/ppp2ppp/4p3/3pP3/3P4/8/PPP2PPP/RNBQKBNR",
                         "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR"
+                        // Preparing Nec6
+                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR",
+                        "rnbqkb1r/pp2nppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR",
+                        // Kingside knight found his dream square
+                        "rnbqkb1r/pp2nppp/4p3/2ppP3/3P4/2P2N2/PP3PPP/RNBQKB1R",
+                        "rnbqkb1r/pp3ppp/2n1p3/2ppP3/3P4/2P2N2/PP3PPP/RNBQKB1R",
+                        // Stopping b4 for good
+                        "rnbqkb1r/pp3ppp/2n1p3/2ppP3/3P4/P1P2N2/1P3PPP/RNBQKB1R",
+                        "rnbqkb1r/1p3ppp/2n1p3/p1ppP3/3P4/P1P2N2/1P3PPP/RNBQKB1R",
+                        // Connecting the pawns
+                        "rnbqkb1r/1p3ppp/2n1p3/p1ppP3/P2P4/2P2N2/1P3PPP/RNBQKB1R",
+                        "rnbqkb1r/5ppp/1pn1p3/p1ppP3/P2P4/2P2N2/1P3PPP/RNBQKB1R",
+                        //Try to create outpost on b4
+                        "rnbqkb1r/5ppp/1pn1p3/p1ppP3/P2P4/N1P2N2/1P3PPP/R1BQKB1R",
+                        "rnbqkb1r/5ppp/1pn1p3/p2pP3/P2p4/N1P2N2/1P3PPP/R1BQKB1R",
+                        // Developing a piece
+                        "rnbqkb1r/5ppp/1pn1p3/p2pP3/P2P4/N4N2/1P3PPP/R1BQKB1R",
+                        "rnbqk2r/4bppp/1pn1p3/p2pP3/P2P4/N4N2/1P3PPP/R1BQKB1R",
+                        // Getting the king safe
+                        "rnbqk2r/4bppp/1pn1p3/pN1pP3/P2P4/5N2/1P3PPP/R1BQKB1R",
+                        "rnbq1rk1/4bppp/1pn1p3/pN1pP3/P2P4/5N2/1P3PPP/R1BQKB1R",
+                        //Attacking the b5 square
+                        "rnbq1rk1/4bppp/1pn1p3/pN1pP3/P2P4/5N2/1P2BPPP/R1BQK2R",
+                        "rn1q1rk1/4bppp/bpn1p3/pN1pP3/P2P4/5N2/1P2BPPP/R1BQK2R",
+                        // Increasing pressure on b5 square
+                        "rn1q1rk1/4bppp/bpn1p3/pN1pP3/P2P4/5N2/1P2BPPP/R1BQ1RK1",
+                        "rn1q1rk1/n3bppp/bp2p3/pN1pP3/P2P4/5N2/1P2BPPP/R1BQ1RK1",
+                        // Further increasing the pressure on b5 square
+                        "rn1q1rk1/n3bppp/bp2p3/pN1pP3/P2P4/5N2/1P1BBPPP/R2Q1RK1",
+                        "rn3rk1/n2qbppp/bp2p3/pN1pP3/P2P4/5N2/1P1BBPPP/R2Q1RK1",
+                        // Start using our outpost on b4
+                        "rn3rk1/n2qbppp/bp2p3/pN1pP3/P2P4/1Q3N2/1P1BBPPP/R4RK1",
+                        "r4rk1/n2qbppp/bpn1p3/pN1pP3/P2P4/1Q3N2/1P1BBPPP/R4RK1",
+                        // Fighting for c file
+                        "r4rk1/n2qbppp/bpn1p3/pN1pP3/P2P4/1Q3N2/1P1BBPPP/R1R3K1",
+                        "r1r3k1/n2qbppp/bpn1p3/pN1pP3/P2P4/1Q3N2/1P1BBPPP/R1R3K1",
+                        // Using outpost for knight
+                        "r1r3k1/n2qbppp/bpn1p3/pN1pP3/P2P4/1Q3N2/1P1B1PPP/R1R2BK1",
+                        "r1r3k1/n2qbppp/bp2p3/pN1pP3/Pn1P4/1Q3N2/1P1B1PPP/R1R2BK1",
+                        //Recapturing rook
+                        "r1R3k1/n2qbppp/bp2p3/pN1pP3/Pn1P4/1Q3N2/1P1B1PPP/R4BK1",
+                        "r1b3k1/n2qbppp/1p2p3/pN1pP3/Pn1P4/1Q3N2/1P1B1PPP/R4BK1"
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
                         "",
@@ -199,6 +244,37 @@ class MainActivity : AppCompatActivity() {
                         "Fighting for the center",
                         "",
                         "Creating pawn breaktrough",
+                        "",
+                        "Preparing Nec6",
+                        "",
+                        "Kingside knight found his dream square",
+                        "",
+                        "Stopping b4 for good",
+                        "",
+                        "Connecting the pawns",
+                        "",
+                        "Try to create outpost on b4",
+                        "",
+                        "Developing a piece",
+                        "",
+                        "Getting the king safe",
+                        "",
+                        "Attacking the b5 square",
+                        "",
+                        "Increasing pressure on b5 square",
+                        "",
+                        "Further increasing the pressure on b5 square",
+                        "",
+                        "Start using our outpost on b4",
+                        "",
+                        "Fighting for c file",
+                        "",
+                        "Using outpost for knight",
+                        "",
+                        "Recapturing rook",
+
+
+
 
                     )
                 ),
