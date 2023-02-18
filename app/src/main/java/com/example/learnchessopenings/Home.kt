@@ -3,6 +3,7 @@ package com.example.learnchessopenings
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +28,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Home.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Home : Fragment()  {
+class Home : Fragment(), dashboardAdapter.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -83,7 +84,7 @@ class Home : Fragment()  {
         )
         with(cursor) {
             while(cursor.moveToNext()) {
-                data.add(dashboardViewModel(getString(1), getString(4), getInt(5), variation.getVariations(getString(6), db)))
+                data.add(dashboardViewModel(getInt(0), getString(1), getString(4), getInt(5), variation.getVariations(getString(6), db)))
             }
         }
         cursor.close()
@@ -95,8 +96,19 @@ class Home : Fragment()  {
             noCoursesText.visibility = View.VISIBLE
         }
 
-        dashboardRecycler.adapter = dashboardAdapter(data)
+        dashboardRecycler.adapter = dashboardAdapter(data, this)
+    }
 
+    override fun onItemClick(id: Int, action: String) {
+        if(action == "review") {
+
+        }
+        else if(action == "learn") {
+            val intent = Intent(context, DetailedCourse::class.java)
+            intent.putExtra("id", id)
+            course.setActive(db, id)
+            startActivity(intent)
+        }
     }
 
     private fun writeDailyDate(homeView: View) {
