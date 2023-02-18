@@ -62,7 +62,7 @@ object variation {
         )
     }
 
-    private fun getDate(date: String?): LocalDate {
+    fun getDate(date: String?): LocalDate {
         return if(date != null) {
             LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         } else {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Previous"
+        android:id="@+id/previous"
+        android:icon="@drawable/baseline_keyboard_double_arrow_left_24"/>
+    <item android:title="Next"
+        android:id="@+id/next"
+        android:icon="@drawable/baseline_keyboard_double_arrow_right_24"/>
+    <item android:title="Next Review"
+        android:id="@+id/nextReview"
+        android:icon="@drawable/baseline_keyboard_return_24"/>
+</menu>

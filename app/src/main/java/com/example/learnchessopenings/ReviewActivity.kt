@@ -2,22 +2,15 @@ package com.example.learnchessopenings
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.BaseColumns
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
-
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import org.w3c.dom.Text
-import retrofit2.HttpException
-import java.io.IOException
-import kotlin.properties.Delegates
+import java.time.LocalDate
 
 
 class ReviewActivity : AppCompatActivity(), ChessDelegate{
@@ -31,12 +24,20 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
     private lateinit var learnNavBar : View
     private lateinit var reviewNavBarItems : BottomNavigationView
     private lateinit var reviewNavBar : View
+    private lateinit var reviewLearnNavBarItems : BottomNavigationView
+    private lateinit var  reviewLearnNavBar : View
     private lateinit var returnAppBar : Toolbar
+
     private lateinit var loadingDialog : View
 
     private var courseId = 0
     private lateinit var chessCourse : Map<String, Any>
-    private lateinit var chessVariations : MutableList<Int>
+    private lateinit var chessVariations : MutableList<*>
+    private var chessVariationsIndex : Int = -1
+    private var chessVariationsLength : Int = -1
+    private var hasDateSet = false
+    private var reviewedLength = 0
+
 
 
 
@@ -55,15 +56,25 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
         learnNavBar = findViewById(R.id.learnNavBar)
         reviewNavBar = findViewById(R.id.reviewNavBar)
         reviewNavBarItems = findViewById(R.id.reviewNavigationView)
+        reviewLearnNavBar = findViewById(R.id.learnReviewNavBar)
+        reviewLearnNavBarItems = findViewById(R.id.reviewLearnNavigationView)
         returnAppBar = findViewById(R.id.return_app_bar)
         loadingDialog = findViewById(R.id.loadingDialogInclude)
 
         db = DbHelper(this)
 
         courseId = intent.getIntExtra("courseId", 0)
-
         chessCourse = course.getCourse(courseId, db)
-        Log.d(TAG, "onCreate: $chessCourse")
+        
+        var chessVariationIDs = intent.getStringExtra("variations")
+
+        if (chessVariationIDs != null) {
+            chessVariationIDs = chessVariationIDs.dropLast(2)
+            chessVariations = chessVariationIDs.split(", ").toMutableList()
+        }
+
+        chessVariationsIndex = 0
+        chessVariationsLength = chessVariations.size
 
 
 
@@ -75,19 +86,69 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
 
         returnAppBar.title = chessCourse["title"].toString()
 
-
-
-        learnNavBarItems.setOnItemSelectedListener {
+        reviewNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.previous -> {
-                   //showPreviousPosition()
-                }
-                R.id.next -> {
-                    //showNextPosition()
+                R.id.solution -> {
+                    if (!hasDateSet) {
+                        variation.setDate(
+                            chessVariations[chessVariationsIndex].toString().toInt(),
+                            db,
+                            LocalDate.now()
+                        )
+                    }
+                    increaseReviewIndex()
+                    chessAlert.text = "You did not solve it."
+                    chessAlert.isVisible = true
+                    chessModel.setReviewInactive()
+                    chessModel.stopGame()
+                    reviewLearnNavBar.isVisible = true
+                    reviewNavBar.isVisible = false
+                    chessView.invalidate()
                 }
             }
             true
         }
+
+        learnNavBarItems.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.previous -> {
+                    showPreviousPosition()
+                }
+                R.id.next -> {
+                    showNextPosition()
+                }
+            }
+            true
+        }
+
+        reviewLearnNavBarItems.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.previous -> {
+                    showPreviousPosition()
+                }
+                R.id.next -> {
+                    showNextPosition()
+                }
+                R.id.nextReview -> {
+                    if(!checkReviewDone()) {
+                        reviewLearnNavBar.isVisible = false
+                        chessAlert.isVisible = false
+                        chessSubHeader.isVisible = false
+                        chessModel.reset()
+                        chessModel.resetReview()
+                        loadVariation()
+                        hasDateSet = false
+                        chessView.invalidate()
+                    } else {
+                        chessAlert.isVisible = true
+                        chessAlert.text = "Nothing new to review."
+                    }
+
+            }
+        }
+        true
+    }
+
 
 
         returnAppBar.setNavigationOnClickListener{
@@ -96,6 +157,9 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
             startActivity(intent)
             finish()
         }
+
+        loadVariation()
+
 
         chessView.invalidate()
 
@@ -123,46 +187,114 @@ class ReviewActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.getValidMovesForView()
     }
 
+    // puzzle functions (needed for chessView)
+
+    override fun hasPuzzleMoveMade(): Boolean {
+        return false
+    }
+
     override fun isPuzzleActive(): Boolean {
         return chessModel.isPuzzleActive()
     }
 
 
     // review functions
-     private fun showNextPosition() {
-         //TODO
-     }
+    private fun showNextPosition() {
+        chessModel.increaseReviewIndex()
+        chessModel.setReviewPosition()
+        chessSubHeader.isVisible = true
+        chessSubHeader.text = chessModel.getComment()
+        chessView.invalidate()
+    }
+
+    private fun showPreviousPosition() {
+        chessModel.decreaseReviewIndex()
+        chessModel.setReviewPosition()
+        chessSubHeader.isVisible = true
+        chessSubHeader.text = chessModel.getComment()
+        chessView.invalidate()
+    }
 
 
-     private fun showPreviousPosition() {
-         //TODO
-     }
+    private fun loadVariation () {
+        val variationIndex = chessVariations[chessVariationsIndex].toString().toInt()
+        val chessVariation = variation.getVariation(variationIndex, db)
+        val playerToMove = chessCourse["black"].toString().toInt()
+        var variationFensString = chessVariation["fen"].toString()
+        chessHeader.text = chessVariation["title"].toString()
+        variationFensString = variationFensString.replace("[", "")
+        variationFensString = variationFensString.replace("]", "")
+        val variationFens  = variationFensString.split(", ") as MutableList<String>
+        var commentsString = chessVariation["comments"].toString()
+        commentsString = commentsString.replace("[", "")
+        commentsString = commentsString.replace("]", "")
+        val comments = commentsString.split(", ") as MutableList<String>
+        reviewedLength += 1
+        chessModel.setReviewActive()
+        chessModel.startGame()
+        chessModel.resetReview()
+        chessModel.setVariationData(playerToMove, variationFens, comments)
+        if (playerToMove == 1) {
+            chessModel.setReviewPosition()
+            chessModel.increaseReviewIndex()
+        }
+    }
 
-     private fun increaseIndex () {
-         // TODO
-     }
-
-     private fun decreaseIndex () {
-        // TODO
-     }
-
-     private fun checkIsVariationLearned (chessVariation : Map<String, Any>) {
-         if (chessVariation["learned"] == 1) {
-             //TODO
-         }
-
-     }
 
 
+    //review functions
+    override fun isReviewActive(): Boolean {
+        return chessModel.isReviewActive()
+    }
+
+    override fun hasReviewMoveMade(): Boolean {
+        return chessModel.hasReviewMoveMade()
+    }
+    
+    private fun increaseReviewIndex() {
+        if (chessVariationsIndex < chessVariationsLength - 1) {
+            chessVariationsIndex += 1
+        }
+    }
 
 
-    // puzzle function ( needed for chessView)
+    private fun checkReviewDone() : Boolean{
+        return (chessVariationsLength == reviewedLength)
+    }
+
     override fun checkIsMoveCorrect() {
-        return
-    }
-    override fun hasPuzzleMoveMade(): Boolean {
-        return false
-    }
+        if (!hasDateSet) {
+            variation.setDate(chessVariations[chessVariationsIndex].toString().toInt(),db, LocalDate.now())
+            hasDateSet = true
+        }
 
+        if (chessModel.isReviewMoveCorrect() && chessModel.isReviewCompleted()) {
+            increaseReviewIndex()
+            chessAlert.text = "XP +300"
+            chessAlert.isVisible = true
+            chessModel.stopGame()
+            chessModel.setReviewInactive()
+            
+            
+            reviewLearnNavBar.isVisible = true
+            reviewNavBar.isVisible = false
+            chessView.invalidate()
+        } else if (chessModel.isReviewMoveCorrect() && !chessModel.isReviewCompleted()) {
+            increaseReviewIndex()
+            chessModel.increaseReviewIndex()
+            chessModel.setReviewPosition()
+            chessModel.increaseReviewIndex()
+            chessView.invalidate()
+        } else {
+            increaseReviewIndex()
+            chessAlert.text = "That was not the right solution."
+            chessAlert.isVisible = true
+            chessModel.setReviewInactive()
+            chessModel.stopGame()
+            reviewLearnNavBar.isVisible = true
+            reviewNavBar.isVisible = false
+            chessView.invalidate()
+        }
+    }
 
 }

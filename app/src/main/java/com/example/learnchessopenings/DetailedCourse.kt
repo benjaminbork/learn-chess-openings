@@ -14,6 +14,7 @@ import com.example.learnchessopenings.Adapters.detailedCourseAdapter
 import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
 import com.example.learnchessopenings.ViewModels.detailedCourseViewModel
+import java.time.LocalDate
 
 
 class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickListener {
@@ -21,6 +22,7 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
     private lateinit var courseTitle : String
     private var courseId = 0
     private var coursePlayer = 0
+    private var variationIdsToReview = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +48,15 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
 
 
         var progress = 0
+        var review = 0
         val variations = data[course.Course.COLUMN_NAME_VARIATIONS] as ArrayList<Map<String, *>>
         for(variation in variations) {
             if(variation["learned"] == 1) {
                 progress += 1
+            }
+            if(variation["learned"] == 1 && variation["last_date"] != LocalDate.now()) {
+                review += 1
+                variationIdsToReview += variation["_id"].toString() + ", "
             }
         }
         val courseProgressText = findViewById<TextView>(R.id.variationProgressCount)
@@ -65,13 +72,17 @@ class DetailedCourse : AppCompatActivity(), detailedCourseAdapter.OnItemClickLis
         courseImg.setImageResource(data[course.Course.COLUMN_NAME_IMAGE_ID] as Int)
 
         val reviewBtn = findViewById<Button>(R.id.reviewButton)
-        reviewBtn.text = "Review All (${progress})"
+        reviewBtn.text = "Review All (${review})"
         reviewBtn.setOnClickListener {
             // Review all button code
-            val intent = Intent(applicationContext, ReviewActivity::class.java)
-            intent.putExtra("courseId", courseId)
-            startActivity(intent)
-            finish()
+            if (review != 0) {
+                val intent = Intent(applicationContext, ReviewActivity::class.java)
+                intent.putExtra("courseId", courseId)
+                intent.putExtra("variations", variationIdsToReview)
+                startActivity(intent)
+                finish()
+            }
+
         }
 
         populateRecycler(findViewById(R.id.recyclerView), variations)

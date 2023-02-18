@@ -1,9 +1,7 @@
 package com.example.learnchessopenings
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -74,7 +72,6 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
         reviewNavBarItems.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.solution -> {
-                    Log.d(TAG, "solution touched")
                     reviewNavBar.isVisible = false
                     learnNavBar.isVisible = true
                     chessModel.setPuzzleInactive()
@@ -101,16 +98,12 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
                 chessModel.stopGame()
                 chessView.isVisible = true
                 chessAlert.isVisible = true
-                chessAlert.setTextColor(Color.RED)
                 chessAlert.text = "Something went wrong. \nCheck your internet connection..."
                 return@launchWhenCreated
             } catch (e: HttpException) {
-                Log.e(TAG, "Unexpected Response", )
                 return@launchWhenCreated
             }
             if (response.isSuccessful && response.body() != null) {
-                Log.d(TAG, "Request successful")
-                Log.d(TAG, "onCreate: ${response.body()}")
                 chessModel.setPuzzleData(response)
                 chessModel.loadPuzzleStartingPosition()
                 chessModel.loadPuzzlePositions()
@@ -126,10 +119,8 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
                     chessHeader.text = chessModel.getPuzzlePlayerToMove()
                     chessHeader.isVisible = true
                 }
-                Log.d(TAG, "onCreate: ${hasPuzzleBeenPlayedToday()}")
 
                 if (hasPuzzleBeenPlayedToday()) {
-                    chessAlert.setTextColor(Color.RED)
                     chessAlert.text = "You already played this puzzle."
                     reviewNavBar.isVisible = false
                     learnNavBar.isVisible = true
@@ -210,7 +201,6 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
             chessView.invalidate()
         } else {
             chessAlert.text = "That was not the right solution."
-            chessAlert.setTextColor(Color.RED)
             chessAlert.isVisible = true
             chessModel.setPuzzleInactive()
             chessModel.stopGame()
@@ -234,6 +224,14 @@ class PuzzleActivity : AppCompatActivity(), ChessDelegate{
         return chessModel.hasPuzzleMoveMade()
     }
 
+    // review functions for chessView needed
+    override fun isReviewActive(): Boolean {
+        return false
+    }
+
+    override fun hasReviewMoveMade(): Boolean {
+        return false
+    }
 
 
 }

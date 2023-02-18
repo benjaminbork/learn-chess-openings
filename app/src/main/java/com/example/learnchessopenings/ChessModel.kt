@@ -1,6 +1,5 @@
 package com.example.learnchessopenings
 
-import android.util.Log
 import retrofit2.Response
 import java.lang.StrictMath.abs
 
@@ -8,7 +7,7 @@ class ChessModel {
     // general game variables
     private var gameOn = true
     private var isPuzzle = false
-    private var isOpening = false
+    private var isReview = false
     private var piecesBox = mutableSetOf<ChessPiece>()
     private var validMoves = mutableListOf<ChessMove>()
     private var playerToMove : ChessPlayer = ChessPlayer.WHITE
@@ -31,13 +30,20 @@ class ChessModel {
     private var hasShortBlackRookMoved = false
     private var hasLongBlackRookMoved = false
 
-    // isPuzzle variables
+    // puzzle variables
     private var solution = ""
     private var puzzlePgn = ""
     private var puzzleStartingPosition = ""
     private var puzzlePlayerToMove : ChessPlayer = ChessPlayer.WHITE
     private var puzzlePositions = mutableListOf<String>()
     private var puzzlePositionIndex = 0
+
+    // review variables
+    private var variationPlayerToMove : ChessPlayer = ChessPlayer.WHITE
+    private var variationPositions = mutableListOf<String>()
+    private var variationPositionIndex = 0
+    private var variationComments = mutableListOf<String>()
+
     init {
         reset()
     }
@@ -835,10 +841,20 @@ class ChessModel {
         }
     }
 
+
+    fun stopGame () {
+        validMoves.removeAll(validMoves)
+        gameOn = false
+    }
+
+    fun startGame () {
+        gameOn = true
+    }
+
+    // puzzle functions
     fun loadPuzzleStartingPosition() {
         if (puzzlePgn.isEmpty()) return
         val pgnMoves = puzzlePgn.split(" ")
-        Log.d(TAG, pgnMoves.toString())
 
 
         var i = 0
@@ -853,16 +869,8 @@ class ChessModel {
             var movingPieceRow : Int? = null
             var toSquare : ChessSquare? = null
             var moved = false
-
-
             pgnMoveString = pgnMoveString.replace("+", "")
             pgnMoveString = pgnMoveString.replace("x", "")
-
-            Log.d(TAG,"-------------")
-            Log.d(TAG,"$i")
-            Log.d(TAG,"String:$pgnMoveString")
-
-            Log.d(TAG,"first char:${pgnMoveString[0].toString()}")
 
             // pawn moves
             if (pgnMoveString.length == 2) {
@@ -1011,14 +1019,6 @@ class ChessModel {
                 movingPieceRow = stringToRow(pgnMoveString[1].toString())
             }
 
-
-
-
-            Log.d(TAG,"movingpiece:$movingPiece")
-            Log.d(TAG,"toSquare:$toSquare")
-            Log.d(TAG,"col:$movingPieceCol")
-            Log.d(TAG,"row:$movingPieceCol")
-
             for (move in legalMoves) {
                 if (move.chessPiece.chessPieceName == movingPiece
                     && toSquare == move.to) {
@@ -1039,7 +1039,6 @@ class ChessModel {
         validMoves.addAll(getAllValidMoves())
         puzzleStartingPosition = toFen()
         puzzlePlayerToMove = playerToMove
-        Log.d(TAG, "loadPuzzleStartingPosition: $puzzleStartingPosition")
     }
     
     fun loadPuzzlePositions() {
@@ -1051,8 +1050,6 @@ class ChessModel {
         solutionMovesString = solutionMovesString.replace("[", "")
         solutionMovesString = solutionMovesString.replace("]", "")
         val solutionMoves = solutionMovesString.split(", ")
-        Log.d(TAG, "loadPuzzlePositions: $solutionMovesString $solutionMoves")
-        
         for (move in solutionMoves) {
             val from = stringToChessSquare(move.substring(0, 2))
             val to = stringToChessSquare(move.substring(2, 4))
@@ -1060,7 +1057,6 @@ class ChessModel {
             puzzlePositions.add(toFen())
         }
 
-        Log.d(TAG, "loadPuzzlePositions: $puzzlePositions")
         loadFEN(puzzleStartingPosition)
         playerToMove = puzzlePlayerToMove as ChessPlayer
         validMoves.removeAll(validMoves)
@@ -1071,7 +1067,6 @@ class ChessModel {
         if (puzzlePositions.isEmpty()) return
         loadFEN(puzzlePositions[puzzlePositionIndex])
         playerToMove = puzzlePlayerToMove
-        Log.d(TAG, "setPuzzlePosition: $playerToMove")
         validMoves.removeAll(validMoves)
         validMoves.addAll(getAllValidMoves())
     }
@@ -1083,12 +1078,9 @@ class ChessModel {
 
     fun decreasePuzzleIndex () {
         val tempPuzzleIndex = puzzlePositionIndex - 1
-        if (tempPuzzleIndex > 0) puzzlePositionIndex = tempPuzzleIndex
+        if (tempPuzzleIndex >= 0) puzzlePositionIndex = tempPuzzleIndex
     }
-    
-    
-    
-    
+
 
     fun setPuzzleData(response : Response<DailyPuzzleData>) {
                 solution = response.body()?.puzzle?.solution.toString()
@@ -1099,15 +1091,9 @@ class ChessModel {
         return  (puzzleStartingPosition.isNotEmpty())
     }
 
-    fun stopGame () {
-        validMoves.removeAll(validMoves)
-        gameOn = false
-    }
 
-    fun startGame () {
-        gameOn = true
-    }
 
+    // puzzle
     fun setPuzzleActive () {
         isPuzzle = true
     }
@@ -1115,6 +1101,7 @@ class ChessModel {
     fun setPuzzleInactive () {
         isPuzzle = false
     }
+
 
     fun isPuzzleActive () : Boolean {
         return isPuzzle
@@ -1146,4 +1133,73 @@ class ChessModel {
         }
     }
 
+    // review functions
+
+    fun setReviewActive () {
+        isReview = true
+    }
+
+    fun setReviewInactive () {
+        isReview = false
+    }
+
+    fun isReviewActive () : Boolean {
+        return isReview
+    }
+
+    fun setVariationData(playerToMove: Int, variationFens: MutableList<String>, comments: MutableList<String>) {
+        variationPositions.removeAll(variationPositions)
+        variationComments.removeAll(variationComments)
+
+        variationPlayerToMove = if (playerToMove == 0) ChessPlayer.WHITE else ChessPlayer.BLACK
+        variationPositions.addAll(variationFens)
+        variationComments.addAll(comments)
+        variationPositionIndex = 0
+    }
+
+    fun getComment () : String{
+        return variationComments[variationPositionIndex]
+    }
+
+    fun hasReviewMoveMade(): Boolean {
+        val currentFen = toFen()
+        return if (variationPositionIndex == 0) {
+            currentFen != "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+        } else {
+            (currentFen != variationPositions[variationPositionIndex - 1])
+        }
+    }
+
+    fun isReviewCompleted () : Boolean {
+        return (variationPositionIndex == variationPositions.size - 1)
+    }
+
+    fun isReviewMoveCorrect () : Boolean {
+        val currentFen = toFen()
+        return (currentFen == variationPositions[variationPositionIndex])
+    }
+
+    fun setReviewPosition () {
+        if (variationPositions.isEmpty()) return
+        loadFEN(variationPositions[variationPositionIndex])
+        playerToMove = variationPlayerToMove
+        validMoves.removeAll(validMoves)
+        validMoves.addAll(getAllValidMoves())
+    }
+
+    fun resetReview () {
+        variationPositions.removeAll(variationPositions)
+        variationComments.removeAll(variationComments)
+        variationPositionIndex = 0
+    }
+
+    fun increaseReviewIndex () {
+        val tempReviewIndex = variationPositionIndex + 1
+        if (tempReviewIndex <= variationPositions.size - 1) variationPositionIndex = tempReviewIndex
+    }
+
+    fun decreaseReviewIndex () {
+        val tempReviewIndex = variationPositionIndex - 1
+        if (tempReviewIndex >= 0) variationPositionIndex = tempReviewIndex
+    }
 }

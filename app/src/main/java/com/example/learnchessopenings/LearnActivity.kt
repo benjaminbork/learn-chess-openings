@@ -2,22 +2,14 @@ package com.example.learnchessopenings
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.BaseColumns
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
-import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import org.w3c.dom.Text
-import retrofit2.HttpException
-import java.io.IOException
-import kotlin.properties.Delegates
 
 
 class LearnActivity : AppCompatActivity(), ChessDelegate{
@@ -187,11 +179,20 @@ class LearnActivity : AppCompatActivity(), ChessDelegate{
 
     }
 
-    // puzzle function ( needed for chessView)
+    // puzzle function (needed for chessView)
     override fun checkIsMoveCorrect() {
         return
     }
     override fun hasPuzzleMoveMade(): Boolean {
+        return false
+    }
+
+    // review functions (needed for chessView)
+    override fun isReviewActive(): Boolean {
+        return false
+    }
+
+    override fun hasReviewMoveMade(): Boolean {
         return false
     }
 

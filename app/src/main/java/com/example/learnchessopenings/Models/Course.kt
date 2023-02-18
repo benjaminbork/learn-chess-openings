@@ -67,7 +67,7 @@ object course {
                 data[Course.COLUMN_NAME_BLACK] = getInt(3)
                 data[Course.COLUMN_NAME_DESCRIPTION] = getString(4)
                 data[Course.COLUMN_NAME_IMAGE_ID] = getInt(5)
-                data[Course.COLUMN_NAME_VARIATIONS] = getString(6)
+                data[Course.COLUMN_NAME_VARIATIONS] = getString(6).split(", ")
             }
         }
         cursor.close()
