@@ -536,42 +536,147 @@ class MainActivity : AppCompatActivity() {
             )
         ),
         mapOf(
-            course.Course.COLUMN_NAME_TITLE to "ANOTHER Example course",
-            course.Course.COLUMN_NAME_BLACK to 0,
-            course.Course.COLUMN_NAME_DESCRIPTION to "This is a description!",
-            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable.bq,
+            course.Course.COLUMN_NAME_TITLE to "Dutch",
+            course.Course.COLUMN_NAME_BLACK to 1,
+            course.Course.COLUMN_NAME_DESCRIPTION to "Solid choice for black against 1.d4",
+            course.Course.COLUMN_NAME_IMAGE_ID to R.drawable._7103,
             course.Course.COLUMN_NAME_VARIATIONS to arrayOf(
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Fiirst Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "Classical Dutch",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
-                        "I don't know how FEN's work pls help",
-                        "Seriously, idk"
+                        // Fighting for the center
+                        "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR",
+                        "rnbqkbnr/ppppp1pp/8/5p2/3P4/8/PPP1PPPP/RNBQKBNR",
+                        // Preparing square for bishop
+                        "rnbqkbnr/ppppp1pp/8/5p2/3P4/5N2/PPP1PPPP/RNBQKB1R",
+                        "rnbqkbnr/pppp2pp/4p3/5p2/3P4/5N2/PPP1PPPP/RNBQKB1R",
+                        // Developing the knight
+                        "rnbqkbnr/pppp2pp/4p3/5p2/3P4/5NP1/PPP1PP1P/RNBQKB1R",
+                        "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/5NP1/PPP1PP1P/RNBQKB1R",
+                        // Developing the bishop
+                        "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/5NP1/PPP1PPBP/RNBQK2R",
+                        "rnbqk2r/ppppb1pp/4pn2/5p2/3P4/5NP1/PPP1PPBP/RNBQK2R",
+                        // Getting the king safe
+                        "rnbqk2r/ppppb1pp/4pn2/5p2/3P4/5NP1/PPP1PPBP/RNBQ1RK1",
+                        "rnbq1rk1/ppppb1pp/4pn2/5p2/3P4/5NP1/PPP1PPBP/RNBQ1RK1",
+                        // Staying fluid in the center
+                        "rnbq1rk1/ppppb1pp/4pn2/5p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1",
+                        "rnbq1rk1/ppp1b1pp/3ppn2/5p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1",
+                        // Stopping e4 push
+                        "rnbq1rk1/ppp1b1pp/3ppn2/5p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
+                        "rnbq1rk1/ppp1b1pp/3pp3/5p2/2PPn3/2N2NP1/PP2PPBP/R1BQ1RK1"
+
+
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN"
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Preparing square for bishop",
+                        "",
+                        "Developing the knight",
+                        "",
+                        "Developing the bishop",
+                        "",
+                        "Getting the king safe",
+                        "",
+                        "Staying fluid in the center",
+                        "",
+                        "Stopping e4 push"
                     )
                 ),
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Second Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "London System",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
-                        "I still don't know how FEN's work pls help",
-                        "Seriously, idk"
+                        // Fighting for the center
+                        "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR",
+                        "rnbqkbnr/ppppp1pp/8/5p2/3P4/8/PPP1PPPP/RNBQKBNR",
+                        // Preparing square for bishop
+                        "rnbqkbnr/ppppp1pp/8/5p2/3P4/5N2/PPP1PPPP/RNBQKB1R",
+                        "rnbqkbnr/pppp2pp/4p3/5p2/3P4/5N2/PPP1PPPP/RNBQKB1R",
+                        // Developing the knight
+                        "rnbqkbnr/pppp2pp/4p3/5p2/3P1B2/5N2/PPP1PPPP/RN1QKB1R",
+                        "rnbqkb1r/pppp2pp/4pn2/5p2/3P1B2/5N2/PPP1PPPP/RN1QKB1R",
+                        // Preparing queenside fianchetto
+                        "rnbqkb1r/pppp2pp/4pn2/5p2/3P1B2/4PN2/PPP2PPP/RN1QKB1R",
+                        "rnbqkb1r/p1pp2pp/1p2pn2/5p2/3P1B2/4PN2/PPP2PPP/RN1QKB1R",
+                        // Fianchetto the bishop
+                        "rnbqkb1r/p1pp2pp/1p2pn2/5p2/3P1B2/3BPN2/PPP2PPP/RN1QK2R",
+                        "rn1qkb1r/pbpp2pp/1p2pn2/5p2/3P1B2/3BPN2/PPP2PPP/RN1QK2R",
+                        // Offering exchange of his good bishop
+                        "rn1qkb1r/pbpp2pp/1p2pn2/5p2/3P1B2/3BPN2/PPPN1PPP/R2QK2R",
+                        "rn1qk2r/pbpp2pp/1p1bpn2/5p2/3P1B2/3BPN2/PPPN1PPP/R2QK2R",
+                        // Capturing his bishop
+                        "rn1qk2r/pbpp2pp/1p1Bpn2/5p2/3P4/3BPN2/PPPN1PPP/R2QK2R",
+                        "rn1qk2r/pb1p2pp/1p1ppn2/5p2/3P4/3BPN2/PPPN1PPP/R2QK2R"
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN"
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Preparing square for bishop",
+                        "",
+                        "Developing the knight",
+                        "",
+                        "Preparing queenside fianchetto",
+                        "",
+                        "Fianchetto the bishop",
+                        "",
+                        "Offering exchange of his good bishop",
+                        "",
+                        "Capturing his bishop"
                     )
                 ),
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Third Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "Reti",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
-                        "I still don't know how FEN's work pls help",
-                        "Seriously, idk"
+                        // Fighting for the center
+                        "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R",
+                        "rnbqkbnr/ppppp1pp/8/5p2/8/5N2/PPPPPPPP/RNBQKB1R",
+                        // Developing the knight
+                        "rnbqkbnr/ppppp1pp/8/5p2/8/3P1N2/PPP1PPPP/RNBQKB1R",
+                        "r1bqkbnr/ppppp1pp/2n5/5p2/8/3P1N2/PPP1PPPP/RNBQKB1R",
+                        // Fighting for the center
+                        "r1bqkbnr/ppppp1pp/2n5/5p2/4P3/3P1N2/PPP2PPP/RNBQKB1R",
+                        "r1bqkbnr/pppp2pp/2n5/4pp2/4P3/3P1N2/PPP2PPP/RNBQKB1R",
+                        // Preparing d5 push
+                        "r1bqkbnr/pppp2pp/2n5/4pp2/4P3/2NP1N2/PPP2PPP/R1BQKB1R",
+                        "r1bqkb1r/pppp2pp/2n2n2/4pp2/4P3/2NP1N2/PPP2PPP/R1BQKB1R",
+                        // Getting the center
+                        "r1bqkb1r/pppp2pp/2n2n2/4pP2/8/2NP1N2/PPP2PPP/R1BQKB1R",
+                        "r1bqkb1r/ppp3pp/2n2n2/3ppP2/8/2NP1N2/PPP2PPP/R1BQKB1R",
+                        // Preparing winning our pawn back
+                        "r1bqkb1r/ppp3pp/2n2n2/3ppP2/3P4/2N2N2/PPP2PPP/R1BQKB1R",
+                        "r1bqkb1r/ppp3pp/2n2n2/3p1P2/3p4/2N2N2/PPP2PPP/R1BQKB1R",
+                        // Combination to win our pawn back
+                        "r1bqkb1r/ppp3pp/2n2n2/3p1P2/3N4/2N5/PPP2PPP/R1BQKB1R",
+                        "r1bqkb1r/ppp3pp/5n2/3p1P2/3n4/2N5/PPP2PPP/R1BQKB1R",
+                        // Winning our pawn back
+                        "r1bqkb1r/ppp3pp/5n2/3p1P2/3Q4/2N5/PPP2PPP/R1B1KB1R",
+                        "r2qkb1r/ppp3pp/5n2/3p1b2/3Q4/2N5/PPP2PPP/R1B1KB1R"
+
+
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN"
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Developing the knight",
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Preparing d5 push",
+                        "",
+                        "Getting the center",
+                        "",
+                        "Preparing winning our pawn back",
+                        "",
+                        "Combination to win our pawn back",
+                        "",
+                        "Winning our pawn back"
                     )
                 )
             )
