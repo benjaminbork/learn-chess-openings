@@ -178,11 +178,11 @@ class MainActivity : AppCompatActivity() {
         mapOf(
             course.Course.COLUMN_NAME_TITLE to "French",
             course.Course.COLUMN_NAME_BLACK to 1,
-            course.Course.COLUMN_NAME_DESCRIPTION to "Solid opening for black",
+            course.Course.COLUMN_NAME_DESCRIPTION to "Solid choice for black against 1.e4",
             course.Course.COLUMN_NAME_IMAGE_ID to R.drawable._7099,
             course.Course.COLUMN_NAME_VARIATIONS to arrayOf(
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Variation #01",
+                    variation.Variation.COLUMN_NAME_TITLE to "Advanced variation",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
                         // Preparing d5
                         "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
@@ -271,71 +271,129 @@ class MainActivity : AppCompatActivity() {
                         "",
                         "Using outpost for knight",
                         "",
-                        "Recapturing rook",
-
-
-
-
+                        "Recapturing rook"
                     )
                 ),
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Second Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "Exchange variation",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        // Preparing d5
                         "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
                         "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR",
+                        // Fighting for the center
                         "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR",
                         "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/ppp2ppp/4p3/3pP3/3P4/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR"
+                        // Exchanging center pawns
+                        "rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR",
+                        "rnbqkbnr/ppp2ppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR",
+                        // Attacking center pawn
+                        "rnbqkbnr/ppp2ppp/8/3p4/3P4/3B4/PPP2PPP/RNBQK1NR",
+                        "r1bqkbnr/ppp2ppp/2n5/3p4/3P4/3B4/PPP2PPP/RNBQK1NR",
+                        // Developing the bishop to active square
+                        "r1bqkbnr/ppp2ppp/2n5/3p4/3P4/2PB4/PP3PPP/RNBQK1NR",
+                        "r1bqk1nr/ppp2ppp/2nb4/3p4/3P4/2PB4/PP3PPP/RNBQK1NR",
+                        // Fighting for central squares
+                        "r1bqk1nr/ppp2ppp/2nb4/3p4/3P4/2PB4/PP2NPPP/RNBQK2R",
+                        "r1b1k1nr/ppp2ppp/2nb1q2/3p4/3P4/2PB4/PP2NPPP/RNBQK2R",
+                        // Develop bishop to active square
+                        "r1b1k1nr/ppp2ppp/2nb1q2/3p4/3P4/2PB4/PP1NNPPP/R1BQK2R",
+                        "r3k1nr/ppp2ppp/2nb1q2/3p1b2/3P4/2PB4/PP1NNPPP/R1BQK2R",
+                        // Preventing knight jumps
+                        "r3k1nr/ppp2ppp/2nb1q2/3p1b2/3P4/2PB1N2/PP2NPPP/R1BQK2R",
+                        "r3k1nr/ppp2pp1/2nb1q1p/3p1b2/3P4/2PB1N2/PP2NPPP/R1BQK2R",
+                        // Exchange his good bishop
+                        "r3k1nr/ppp2pp1/2nb1q1p/3p1b2/3P1B2/2PB1N2/PP2NPPP/R2QK2R",
+                        "r3k1nr/ppp2pp1/2nb1q1p/3p4/3P1B2/2Pb1N2/PP2NPPP/R2QK2R",
+                        // Retreating our good bishop
+                        "r3k1nr/ppp2pp1/2nB1q1p/3p4/3P4/2Pb1N2/PP2NPPP/R2QK2R",
+                        "r3k1nr/ppp2pp1/2nB1q1p/3p4/3Pb3/2P2N2/PP2NPPP/R2QK2R",
+                        // Ruining his kingside structure
+                        "r3k1nr/ppB2pp1/2n2q1p/3p4/3Pb3/2P2N2/PP2NPPP/R2QK2R",
+                        "r3k1nr/ppB2pp1/2n2q1p/3p4/3P4/2P2b2/PP2NPPP/R2QK2R",
+                        // Winning our pawn back
+                        "r3k1nr/ppB2pp1/2n2q1p/3p4/3P4/2P2P2/PP2NP1P/R2QK2R",
+                        "r3k1nr/ppB2pp1/2n4p/3p4/3P4/2P2q2/PP2NP1P/R2QK2R",
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN",
-                        "Comment on the third FEN",
-                        "Comment on the fourth FEN",
-                        "Comment on the fifth FEN",
-                        "Comment on the sixth FEN",
-
+                        "",
+                        "Preparing d5",
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Exchanging center pawns",
+                        "",
+                        "Attacking center pawn",
+                        "",
+                        "Developing the bishop to active square",
+                        "",
+                        "Fighting for central squares",
+                        "",
+                        "Develop bishop to active square ",
+                        "",
+                        "Preventing knight jumps",
+                        "",
+                        "Exchanging his good bishop",
+                        "",
+                        "Retreating our good bishop",
+                        "",
+                        "Ruining his kingside structure",
+                        "",
+                        "Winning our pawn back"
                         )
                 ),
                 mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Third Variation",
+                    variation.Variation.COLUMN_NAME_TITLE to "Classical variation",
                     variation.Variation.COLUMN_NAME_FEN to arrayOf(
+                        // Preparing d5
                         "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
                         "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR",
+                        // Fighting for the center
                         "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR",
                         "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/ppp2ppp/4p3/3pP3/3P4/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR"
+                        // Developing knight to active square
+                        "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR",
+                        "rnbqkb1r/ppp2ppp/4pn2/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR",
+                        // Removing the pin
+                        "rnbqkb1r/ppp2ppp/4pn2/3p2B1/3PP3/2N5/PPP2PPP/R2QKBNR",
+                        "rnbqk2r/ppp1bppp/4pn2/3p2B1/3PP3/2N5/PPP2PPP/R2QKBNR",
+                        // Saving the knight
+                        "rnbqk2r/ppp1bppp/4pn2/3pP1B1/3P4/2N5/PPP2PPP/R2QKBNR",
+                        "rnbqk2r/pppnbppp/4p3/3pP1B1/3P4/2N5/PPP2PPP/R2QKBNR",
+                        // Attacking the bishop
+                        "rnbqk2r/pppnbppp/4p3/3pP1B1/3P3P/2N5/PPP2PP1/R2QKBNR",
+                        "rnbqk2r/pppnbpp1/4p2p/3pP1B1/3P3P/2N5/PPP2PP1/R2QKBNR",
+                        // Capturing the bishop
+                        "rnbqk2r/pppnBpp1/4p2p/3pP3/3P3P/2N5/PPP2PP1/R2QKBNR",
+                        "rnb1k2r/pppnqpp1/4p2p/3pP3/3P3P/2N5/PPP2PP1/R2QKBNR",
+                        // Defending the pawn
+                        "rnb1k2r/pppnqpp1/4p2p/3pP3/3P2QP/2N5/PPP2PP1/R3KBNR",
+                        "rnb2rk1/pppnqpp1/4p2p/3pP3/3P2QP/2N5/PPP2PP1/R3KBNR",
+                        // Counter attacking the center
+                        "rnb2rk1/pppnqpp1/4p2p/3pP3/3P1PQP/2N5/PPP3P1/R3KBNR",
+                        "rnb2rk1/pp1nqpp1/4p2p/2ppP3/3P1PQP/2N5/PPP3P1/R3KBNR"
+
+
                     ),
                     variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN",
-                        "Comment on the third FEN",
-                        "Comment on the fourth FEN",
-                        "Comment on the fifth FEN",
-                        "Comment on the sixth FEN",
-
-                        )
-                ),
-                mapOf(
-                    variation.Variation.COLUMN_NAME_TITLE to "Fourth Variation",
-                    variation.Variation.COLUMN_NAME_FEN to arrayOf(
-                        "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
-                        "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR",
-                        "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/ppp2ppp/4p3/3pP3/3P4/8/PPP2PPP/RNBQKBNR",
-                        "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR"
-                    ),
-                    variation.Variation.COLUMN_NAME_COMMENTS to arrayOf(
-                        "Comment on the first FEN",
-                        "Comment on the second FEN",
-                        "Comment on the third FEN",
-                        "Comment on the fourth FEN",
-                        "Comment on the fifth FEN",
-                        "Comment on the sixth FEN",
-
+                        "",
+                        "Preparing d5",
+                        "",
+                        "Fighting for the center",
+                        "",
+                        "Developing knight to active square",
+                        "",
+                        "Removing the pin",
+                        "",
+                        "Saving the knight",
+                        "",
+                        "Attacking the bishop",
+                        "",
+                        "Capturing the bishop",
+                        "",
+                        "Defending the pawn",
+                        "",
+                        "Counter attacking the center"
                         )
                 )
             )
