@@ -3,6 +3,7 @@ package com.example.learnchessopenings
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,8 +16,10 @@ import com.example.learnchessopenings.Adapters.dashboardAdapter
 import com.example.learnchessopenings.Models.course
 import com.example.learnchessopenings.Models.variation
 import com.example.learnchessopenings.ViewModels.dashboardViewModel
+import com.example.learnchessopenings.DetailedCourse
 import androidx.cardview.widget.CardView
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,8 +52,6 @@ class Home : Fragment(), dashboardAdapter.OnItemClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val homeView = inflater.inflate(R.layout.fragment_home, container, false)
-        
-        populateRecycler(homeView)
 
         writeDailyDate(homeView)
 
@@ -64,6 +65,11 @@ class Home : Fragment(), dashboardAdapter.OnItemClickListener {
             puzzle.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(puzzle)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        populateRecycler(requireView())
     }
 
 
@@ -101,7 +107,28 @@ class Home : Fragment(), dashboardAdapter.OnItemClickListener {
 
     override fun onItemClick(id: Int, action: String) {
         if(action == "review") {
+            val data = getData(id)
+            var progress = 0
+            var variationIdsToReview = ""
+            var review = 0
 
+            val variations = data[course.Course.COLUMN_NAME_VARIATIONS] as ArrayList<Map<String, *>>
+            for(variation in variations) {
+                if(variation["learned"] == 1) {
+                    progress += 1
+                }
+                if(variation["learned"] == 1 && variation["last_date"] != LocalDate.now()) {
+                    review += 1
+                    variationIdsToReview += variation["_id"].toString() + ", "
+                }
+            }
+
+            if (review != 0) {
+                val intent = Intent(context, ReviewActivity::class.java)
+                intent.putExtra("courseId", id)
+                intent.putExtra("variations", variationIdsToReview)
+                startActivity(intent)
+            }
         }
         else if(action == "learn") {
             val intent = Intent(context, DetailedCourse::class.java)
@@ -109,6 +136,35 @@ class Home : Fragment(), dashboardAdapter.OnItemClickListener {
             course.setActive(db, id)
             startActivity(intent)
         }
+    }
+
+    private fun getData(courseId: Int): Map<String, Any> {
+        val readDb = db.readableDatabase
+        var data = mapOf<String, Any>()
+
+        val cursor = readDb.query(
+            course.Course.TABLE_NAME,
+            null,
+            "${BaseColumns._ID} = ?",
+            arrayOf(courseId.toString()),
+            null,
+            null,
+            null
+        )
+        while(cursor.moveToNext()) {
+            data = mapOf(
+                BaseColumns._ID to cursor.getInt(0),
+                course.Course.COLUMN_NAME_TITLE to cursor.getString(1),
+                course.Course.COLUMN_NAME_ACTIVE to cursor.getInt(2),
+                course.Course.COLUMN_NAME_BLACK to cursor.getInt(3),
+                course.Course.COLUMN_NAME_DESCRIPTION to cursor.getString(4),
+                course.Course.COLUMN_NAME_IMAGE_ID to cursor.getInt(5),
+                course.Course.COLUMN_NAME_VARIATIONS to variation.getVariations(cursor.getString(6), db)
+            )
+        }
+        cursor.close()
+
+        return data
     }
 
     private fun writeDailyDate(homeView: View) {

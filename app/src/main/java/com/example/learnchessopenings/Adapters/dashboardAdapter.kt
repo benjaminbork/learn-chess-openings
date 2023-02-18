@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnchessopenings.R
 import com.example.learnchessopenings.ViewModels.dashboardViewModel
+import java.time.LocalDate
 
 class dashboardAdapter(val mList: List<dashboardViewModel>, private val listener: OnItemClickListener) : RecyclerView.Adapter<dashboardAdapter.ViewHolder>() {
     interface OnItemClickListener {
@@ -26,10 +27,14 @@ class dashboardAdapter(val mList: List<dashboardViewModel>, private val listener
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val ItemsViewModel = mList[position]
 
+        var review = 0
         var progress = 0
         for(variation in ItemsViewModel.variations) {
             if(variation["learned"] == 1) {
                 progress += 1
+                if(variation["last_date"] != LocalDate.now()) {
+                    review += 1
+                }
             }
         }
 
@@ -39,13 +44,7 @@ class dashboardAdapter(val mList: List<dashboardViewModel>, private val listener
         holder.progressBar.progress = progress
         holder.progressBar.max = ItemsViewModel.variations.size
         holder.img.setImageResource(ItemsViewModel.imageId)
-
-        /* holder.reviewBtn.setOnClickListener {
-            // This is where review button code goes
-        }
-        holder.learnBtn.setOnClickListener {
-            // This is where learn button code goes
-        }*/
+        holder.reviewBtn.text = "Review (${review})"
     }
 
     override fun getItemCount(): Int {
